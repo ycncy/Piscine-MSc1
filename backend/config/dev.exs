@@ -3,9 +3,9 @@ import Config
 # Configure your database
 config :backend, Backend.Repo,
   username: "postgres",
-  password: "PAR_29",
+  password: "pass123",
   hostname: "localhost",
-  database: "time_manager",
+  database: "timemanager",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -14,7 +14,7 @@ config :backend, Backend.Repo,
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
-# watchers to your application. For example, we can use it
+# watchers to your application. For example, we can use i
 # to bundle .js and .css sources.
 config :backend, BackendWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
