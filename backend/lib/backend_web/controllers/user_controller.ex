@@ -4,7 +4,6 @@ defmodule BackendWeb.UserController do
   alias Backend.Repo
   alias Backend.Users
   alias Backend.Users.User
-  alias BackendWeb.UserJSON
 
   action_fallback BackendWeb.FallbackController
 

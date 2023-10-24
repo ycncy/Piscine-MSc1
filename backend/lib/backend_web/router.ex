@@ -25,10 +25,21 @@ defmodule BackendWeb.Router do
   end
 
   scope "/api/clocks", BackendWeb do
-    pipe_through(:api)
+    pipe_through :api
 
-    get("/:userID", ClockController, :get_clocks_by_userId)
-    post("/", ClockController, :create_clocking_time)
+    get "/:userID", ClockController, :get_clocks_by_userId
+    post "/", ClockController, :create_clocking_time
+  end
+
+  scope "/api/workingtimes", BackendWeb do
+    pipe_through :api
+
+    get  "/:userID", WorkingTimeController, :get_all_working_times
+    get  "/:userID/:id", WorkingTimeController, :get_one_working_time
+    post "/:userID", WorkingTimeController, :create_working_time
+    put "/:id", WorkingTimeController, :update_working_time
+    delete "/:id", WorkingTimeController, :delete_working_time
+
   end
 
   if Application.compile_env(:backend, :dev_routes) do

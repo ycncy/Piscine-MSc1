@@ -10,7 +10,7 @@ defmodule BackendWeb.Gettext do
       # Simple translation
       gettext("Here is the string to translate")
 
-      # Plural translation
+      # Plural trmix uranslation
       ngettext("Here is the string to translate",
                "Here are the strings to translate",
                3)
