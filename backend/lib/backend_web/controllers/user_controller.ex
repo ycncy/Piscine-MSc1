@@ -4,6 +4,7 @@ defmodule BackendWeb.UserController do
   alias Backend.Repo
   alias Backend.Users
   alias Backend.Users.User
+  alias BackendWeb.UserJSON
 
   action_fallback BackendWeb.FallbackController
 
@@ -27,7 +28,7 @@ defmodule BackendWeb.UserController do
 
       render(conn, :show, user: user)
     rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, "not found")
+      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for user_id : #{id}")
     end
   end
 
@@ -37,8 +38,12 @@ defmodule BackendWeb.UserController do
     username = Map.get(user_params, "username")
     email = Map.get(user_params, "email")
 
-    user = Repo.get_by(User, username: username, email: email)
-    render(conn, :show, user: user)
+    try do
+      user = Repo.get_by!(User, username: username, email: email)
+      render(conn, :show, user: user)
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for credentials : username : #{username} and email : #{email}")
+    end
   end
 
   def update_user(conn, %{"userID" => id, "user" => user_params}) do
