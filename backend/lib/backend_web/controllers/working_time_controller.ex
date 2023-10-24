@@ -17,14 +17,9 @@ defmodule BackendWeb.WorkingTimeController do
     render(conn, :index, working_times: working_times)
   end
 
-  def create_working_time(conn, %{"working_time" => working_time_params, "userID" => id}) do
-    params = %{
-      workingtime: %{
-        start_time: Map.get("start_time", working_time_params),
-        end_time: Map.get("end_time", working_time_params),
-        user_id: id
-      }
-    }
+  def create_working_time(conn, %{"userID" => id}) do
+    {user_id, ""} = Integer.parse(id)
+    params = Map.merge(%{"user_id" => user_id}, conn.body_params["working_time"])
 
     with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.create_working_time(params) do
       conn
