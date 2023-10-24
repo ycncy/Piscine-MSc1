@@ -17,11 +17,11 @@ defmodule BackendWeb.Router do
   scope "/api/users", BackendWeb do
     pipe_through :api
 
-    get "/", UserController, :home
-    post "/", UserController, :home
-    get "/:userID", UserController, :home
-    put "/:userID", UserController, :home
-    delete "/:userID", UserController, :home
+    get "/", UserController, :get_user_by_credentials
+    post "/", UserController, :create_user
+    get "/:userID", UserController, :get_user_by_id
+    put "/:userID", UserController, :update_user
+    delete "/:userID", UserController, :delete_user
   end
 
   # Other scopes may use custom stacks.
