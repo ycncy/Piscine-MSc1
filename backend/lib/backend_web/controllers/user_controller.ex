@@ -45,7 +45,7 @@ defmodule BackendWeb.UserController do
     end
   end
 
-  def update_user(conn, %{"userID" => id, "user" => user_params}) do
+  def update_user(conn, %{"userID" => user_id, "user" => user_params}) do
     try do
       user = Users.get_user!(user_id)
 
