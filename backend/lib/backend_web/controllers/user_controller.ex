@@ -1,6 +1,6 @@
 defmodule BackendWeb.UserController do
   use BackendWeb, :controller
-  alias Backend.Repo
+  
   alias Backend.Users
   alias Backend.Users.User
 
@@ -24,11 +24,12 @@ defmodule BackendWeb.UserController do
     render(conn, :show, user: user)
   end
 
-  def get_user_by_credentials(conn, %{"user" => user_params}) do
+  def get_user_by_credentials(conn, _params) do
+    user_params = conn.query_params
     username = Map.get(user_params, "username")
     email = Map.get(user_params, "email")
 
-    user = Repo.get(%User{username: username, email: email})
+    user = Users.get_user!(%User{username: username, email: email})
     render(conn, :show, user: user)
   end
 
