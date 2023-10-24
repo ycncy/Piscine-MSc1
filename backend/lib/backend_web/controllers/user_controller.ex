@@ -22,8 +22,13 @@ defmodule BackendWeb.UserController do
   end
 
   def get_user_by_id(conn, %{"userID" => id}) do
-    user = Users.get_user!(id)
-    render(conn, :show, user: user)
+    try do
+      user = Users.get_user!(id)
+
+      render(conn, :show, user: user)
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, "not found")
+    end
   end
 
   def get_user_by_credentials(conn, _params) do
