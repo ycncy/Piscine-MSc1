@@ -1,7 +1,6 @@
 defmodule BackendWeb.UserController do
   use BackendWeb, :controller
 
-  import Ecto.Query
   alias Backend.Repo
   alias Backend.Users
   alias Backend.Users.User

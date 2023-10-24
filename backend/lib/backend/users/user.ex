@@ -5,6 +5,7 @@ defmodule Backend.Users.User do
   schema "users" do
     field :username, :string
     field :email, :string
+    field :role, Ecto.Enum, values: [:employee, :manager, :general_manager]
 
     timestamps(type: :utc_datetime)
   end
