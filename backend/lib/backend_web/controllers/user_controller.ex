@@ -41,10 +41,11 @@ defmodule BackendWeb.UserController do
       end
     rescue
       Ecto.ConstraintError -> send_resp(conn, 403, Poison.encode!(%{error: "ConstraintError", message: "User already exists"}))
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "Not found", message: "No user found for credentials"}))
     end
   end
 
-  def update_user(conn, %{"userID" => user_id, "user" => user_params}) do
+  def update_user(conn, %{"userID" => id, "user" => user_params}) do
     try do
       user = Users.get_user!(user_id)
 

@@ -1,5 +1,6 @@
-defmodule Backend.Repo.Migrations.UpdateUserRoleUniqueIndex do
+defmodule Backend.Repo.Migrations.UserTable do
   use Ecto.Migration
+
 
   def change do
     create table(:users) do

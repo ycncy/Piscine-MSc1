@@ -1,6 +1,5 @@
-defmodule Backend.Repo.Migrations.CreateWorkingTimes do
+defmodule Backend.Repo.Migrations.WorkingtimeTable do
   use Ecto.Migration
-
   def change do
     create table(:working_times) do
       add :start_time, :naive_datetime, null: false
