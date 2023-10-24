@@ -25,10 +25,16 @@ defmodule BackendWeb.WorkingTimeController do
     end
   end
 
-  def get_one_working_time(conn, %{"id" => id}) do
-    working_time = WorkingTimes.get_working_time!(id)
+  def get_one_working_time(conn, %{"userID" => user_id, "id" => id}) do
+    {user_id_int, ""} = Integer.parse(user_id)
+    {working_time_id_int, ""} = Integer.parse(id)
+
+    working_time = Repo.get_by(WorkingTime, user_id: user_id_int, id: working_time_id_int)
+
     render(conn, :show, working_time: working_time)
   end
+
+
 
   def update_working_time(conn, %{"id" => id, "working_time" => working_time_params}) do
     working_time = WorkingTimes.get_working_time!(id)

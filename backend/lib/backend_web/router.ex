@@ -25,9 +25,9 @@ defmodule BackendWeb.Router do
 
     get  "/:userID", WorkingTimeController, :get_all_working_times
     get  "/:userID/:id", WorkingTimeController, :get_one_working_time
-    post "/", WorkingTimeController, :create_working_time
-    put "/:userID", WorkingTimeController, :update_working_time
-    delete "/:userID", WorkingTimeController, :delete_working_time
+    post "/:userID", WorkingTimeController, :create_working_time
+    put "/:id", WorkingTimeController, :update_working_time
+    delete "/:id", WorkingTimeController, :delete_working_time
 
   end
 
