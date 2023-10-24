@@ -14,10 +14,14 @@ defmodule BackendWeb.UserController do
   end
 
   def create_user(conn, %{"user" => user_params}) do
-    with {:ok, %User{} = user} <- Users.create_user(user_params) do
-      conn
-      |> put_status(:created)
-      |> render(:show, user: user)
+    try do
+      with {:ok, %User{} = user} <- Users.create_user(user_params) do
+        conn
+        |> put_status(:created)
+        |> render(:show, user: user)
+      end
+    rescue
+      Ecto.ConstraintError -> send_resp(conn, 403, Poison.encode!(%{error: "ConstraintError", message: "User already exists"}))
     end
   end
 
@@ -41,7 +45,7 @@ defmodule BackendWeb.UserController do
       user = Repo.get_by!(User, username: username, email: email)
       render(conn, :show, user: user)
     rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for credentials : username : #{username} and email : #{email}")
+      FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "Not found", message: "No user found for credentials : username : #{username} and email : #{email}"}))
     end
   end
 

@@ -15,5 +15,6 @@ defmodule Backend.Users.User do
     user
     |> cast(attrs, [:username, :email, :role])
     |> validate_required([:username, :email, :role])
+    |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "Not valid email format")
   end
 end

@@ -10,8 +10,8 @@ defmodule Backend.Repo.Migrations.UpdateUserRoleUniqueIndex do
       timestamps(type: :utc_datetime)
     end
 
-    create unique_index(:users, :username)
     create unique_index(:users, :id)
+    create unique_index(:users, :username)
     create unique_index(:users, :email)
   end
 end

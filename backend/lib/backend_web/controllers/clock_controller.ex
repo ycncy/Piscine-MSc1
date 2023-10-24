@@ -4,6 +4,7 @@ defmodule BackendWeb.ClockController do
   import Ecto.Query
   alias Backend.Repo
   alias Backend.Clocks
+  alias Backend.Users.User
   alias Backend.Clocks.Clock
 
   action_fallback(BackendWeb.FallbackController)
@@ -14,12 +15,21 @@ defmodule BackendWeb.ClockController do
   end
 
   def get_clocks_by_userId(conn, %{"userID" => id}) do
-    {user_id_int, ""} = Integer.parse(id)
+    try do
+      {user_id_int, ""} = Integer.parse(id)
 
-    query = from(x in Clock, where: x.user_id == ^user_id_int)
+      query = from(x in Clock, where: x.user_id == ^user_id_int)
 
-    clocks = Repo.all(query)
-    render(conn, :index, clocks: clocks)
+      clocks = Repo.all(query)
+
+      if length(clocks) == 0 do
+        user = Repo.get_by!(User, id: user_id_int)
+      end
+
+      render(conn, :index, clocks: clocks)
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User not found"}))
+    end
   end
 
   def create_clocking_time(conn, %{"clock" => clock_params}) do
