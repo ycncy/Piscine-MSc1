@@ -45,7 +45,7 @@ defmodule BackendWeb.UserController do
       user = Repo.get_by!(User, username: username, email: email)
       render(conn, :show, user: user)
     rescue
-      FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "Not found", message: "No user found for credentials : username : #{username} and email : #{email}"}))
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "Not found", message: "No user found for credentials"}))
     end
   end
 
