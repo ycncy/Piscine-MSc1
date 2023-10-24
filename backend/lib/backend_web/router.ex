@@ -39,6 +39,7 @@ defmodule BackendWeb.Router do
 
       live_dashboard "/dashboard", metrics: BackendWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
+
     end
   end
 end
