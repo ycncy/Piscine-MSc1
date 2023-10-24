@@ -14,10 +14,14 @@ defmodule BackendWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BackendWeb do
-    pipe_through :browser
+  scope "/api/users", BackendWeb do
+    pipe_through :api
 
-    get "/", PageController, :home
+    get "/", UserController, :home
+    post "/", UserController, :home
+    get "/:userID", UserController, :home
+    put "/:userID", UserController, :home
+    delete "/:userID", UserController, :home
   end
 
   # Other scopes may use custom stacks.
@@ -33,12 +37,5 @@ defmodule BackendWeb.Router do
     # you can use Plug.BasicAuth to set up some basic authentication
     # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :browser
-
-      live_dashboard "/dashboard", metrics: BackendWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
   end
 end
