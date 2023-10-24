@@ -13,7 +13,7 @@ defmodule Backend.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :email])
-    |> validate_required([:username, :email])
+    |> cast(attrs, [:username, :email, :role])
+    |> validate_required([:username, :email, :role])
   end
 end
