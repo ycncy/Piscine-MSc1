@@ -11,6 +11,7 @@ defmodule Backend.Repo.Migrations.UpdateUserRoleUniqueIndex do
     end
 
     create unique_index(:users, :username)
+    create unique_index(:users, :id)
     create unique_index(:users, :email)
   end
 end
