@@ -1,6 +1,8 @@
 defmodule BackendWeb.UserController do
   use BackendWeb, :controller
-  
+
+  import Ecto.Query
+  alias Backend.Repo
   alias Backend.Users
   alias Backend.Users.User
 
@@ -8,6 +10,7 @@ defmodule BackendWeb.UserController do
 
   def get_all(conn, _params) do
     users = Users.list_users()
+
     render(conn, :index, users: users)
   end
 
@@ -26,10 +29,11 @@ defmodule BackendWeb.UserController do
 
   def get_user_by_credentials(conn, _params) do
     user_params = conn.query_params
+
     username = Map.get(user_params, "username")
     email = Map.get(user_params, "email")
 
-    user = Users.get_user!(%User{username: username, email: email})
+    user = Repo.get_by(User, username: username, email: email)
     render(conn, :show, user: user)
   end
 
