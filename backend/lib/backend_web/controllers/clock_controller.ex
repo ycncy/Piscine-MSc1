@@ -1,6 +1,8 @@
 defmodule BackendWeb.ClockController do
   use BackendWeb, :controller
 
+  import Ecto.Query
+  alias Backend.Repo
   alias Backend.Clocks
   alias Backend.Clocks.Clock
 
@@ -12,15 +14,18 @@ defmodule BackendWeb.ClockController do
   end
 
   def get_clocks_by_userId(conn, %{"userID" => id}) do
-    clock = Clocks.get_clock!(id)
-    render(conn, :show, user: user)
+    {user_id_int, ""} = Integer.parse(id)
+
+    query = from(x in Clock, where: x.user_id == ^user_id_int)
+
+    clocks = Repo.all(query)
+    render(conn, :index, clocks: clocks)
   end
 
   def create_clocking_time(conn, %{"clock" => clock_params}) do
     with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/clocks/#{clock}")
       |> render(:show, clock: clock)
     end
   end
