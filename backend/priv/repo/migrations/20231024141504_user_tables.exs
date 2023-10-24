@@ -1,4 +1,4 @@
-defmodule Backend.Repo.Migrations.UpdateUserRoleUniqueIndex do
+defmodule Backend.Repo.Migrations.UserTables do
   use Ecto.Migration
 
   def change do

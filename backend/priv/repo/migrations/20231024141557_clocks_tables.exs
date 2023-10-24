@@ -1,4 +1,4 @@
-defmodule Backend.Repo.Migrations.CreateClocks do
+defmodule Backend.Repo.Migrations.ClocksTables do
   use Ecto.Migration
 
   def change do

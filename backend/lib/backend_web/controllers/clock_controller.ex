@@ -18,7 +18,7 @@ defmodule BackendWeb.ClockController do
 
     query = from(x in Clock, where: x.user_id == ^user_id_int)
 
-    clocks = Repo.all(query)
+    clocks = Repo.all!(query)
     render(conn, :index, clocks: clocks)
   end
 

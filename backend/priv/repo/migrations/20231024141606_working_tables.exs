@@ -1,4 +1,4 @@
-defmodule Backend.Repo.Migrations.CreateWorkingTimes do
+defmodule Backend.Repo.Migrations.WorkingTables do
   use Ecto.Migration
 
   def change do

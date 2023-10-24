@@ -46,18 +46,26 @@ defmodule BackendWeb.UserController do
   end
 
   def update_user(conn, %{"userID" => id, "user" => user_params}) do
-    user = Users.get_user!(id)
+    try do
+      user = Users.get_user!(id)
 
-    with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
-      render(conn, :show, user: user)
+      with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
+        render(conn, :show, user: user)
+      end
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for user_id : #{id}")
     end
   end
 
   def delete_user(conn, %{"userID" => id}) do
-    user = Users.get_user!(id)
+    try do
+      user = Users.get_user!(id)
 
-    with {:ok, %User{}} <- Users.delete_user(user) do
-      send_resp(conn, :no_content, "")
+      with {:ok, %User{}} <- Users.delete_user(user) do
+        send_resp(conn, :no_content, "")
+      end
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for user_id : #{id}")
     end
   end
 end
