@@ -23,7 +23,7 @@ defmodule BackendWeb.ClockController do
       clocks = Repo.all(query)
 
       if length(clocks) == 0 do
-        user = Repo.get_by!(User, id: user_id_int)
+        Repo.get_by!(User, id: user_id_int)
       end
 
       render(conn, :index, clocks: clocks)

@@ -22,7 +22,7 @@ config :backend, BackendWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  debug_errors: false,
   secret_key_base: "5YYh6+D5y9EZcNKRzXnklVLj1cpH5fMgKOzQarWqzyINszAwBLIbCRhUj1aX9f+9",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},

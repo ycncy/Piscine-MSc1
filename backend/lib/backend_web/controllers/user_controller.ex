@@ -7,10 +7,29 @@ defmodule BackendWeb.UserController do
 
   action_fallback BackendWeb.FallbackController
 
-  def get_all(conn, _params) do
-    users = Users.list_users()
+  def get_user_by_id(conn, %{"userID" => user_id}) do
+    try do
+      user = Users.get_user!(user_id)
 
-    render(conn, :index, users: users)
+      render(conn, :show, user: user)
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "User #{user_id} not found"}))
+    end
+  end
+
+  def get_user_by_credentials(conn, _params) do
+    user_params = conn.query_params
+
+    username = Map.get(user_params, "username")
+    email = Map.get(user_params, "email")
+
+    try do
+      user = Repo.get_by!(User, username: username, email: email)
+      render(conn, :show, user: user)
+    rescue
+      FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "No user found for credentials : username : #{username} and email : #{email}"}))
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "No user found for credentials : username : #{username} and email : #{email}"}))
+    end
   end
 
   def create_user(conn, %{"user" => user_params}) do
@@ -25,51 +44,27 @@ defmodule BackendWeb.UserController do
     end
   end
 
-  def get_user_by_id(conn, %{"userID" => id}) do
+  def update_user(conn, %{"userID" => user_id, "user" => user_params}) do
     try do
-      user = Users.get_user!(id)
-
-      render(conn, :show, user: user)
-    rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for user_id : #{id}")
-    end
-  end
-
-  def get_user_by_credentials(conn, _params) do
-    user_params = conn.query_params
-
-    username = Map.get(user_params, "username")
-    email = Map.get(user_params, "email")
-
-    try do
-      user = Repo.get_by!(User, username: username, email: email)
-      render(conn, :show, user: user)
-    rescue
-      FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "Not found", message: "No user found for credentials : username : #{username} and email : #{email}"}))
-    end
-  end
-
-  def update_user(conn, %{"userID" => id, "user" => user_params}) do
-    try do
-      user = Users.get_user!(id)
+      user = Users.get_user!(user_id)
 
       with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
         render(conn, :show, user: user)
       end
     rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for user_id : #{id}")
+      FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "User #{user_id} not found"}))
     end
   end
 
-  def delete_user(conn, %{"userID" => id}) do
+  def delete_user(conn, %{"userID" => user_id}) do
     try do
-      user = Users.get_user!(id)
+      user = Users.get_user!(user_id)
 
       with {:ok, %User{}} <- Users.delete_user(user) do
         send_resp(conn, :no_content, "")
       end
     rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, "No user found for user_id : #{id}")
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "User #{user_id} not found"}))
     end
   end
 end

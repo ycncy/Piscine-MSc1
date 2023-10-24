@@ -17,7 +17,7 @@ defmodule BackendWeb.WorkingTimeController do
       working_times = Repo.all(query)
 
       if length(working_times) == 0 do
-        user = Repo.get_by!(User, id: user_id_int)
+        Repo.get_by!(User, id: user_id_int)
       end
 
       render(conn, :index, working_times: working_times)
@@ -37,7 +37,10 @@ defmodule BackendWeb.WorkingTimeController do
         |> render(:show, working_time: working_time)
       end
     rescue
-      Ecto.ConstraintError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User #{user_id} not found"}))
+      Ecto.ConstraintError ->
+        send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User #{user_id} not found"}))
+      Protocol.UndefinedError ->
+        send_resp(conn , 404 , Poison.encode!(%{error: "NoResultError", message: "Invalid Route"}))
     end
   end
 
