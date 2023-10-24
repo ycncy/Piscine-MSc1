@@ -20,11 +20,11 @@ defmodule BackendWeb.Router do
     get "/", PageController, :home
   end
 
-  scope "/api", BackendWeb do
+  scope "/api/workingtimes", BackendWeb do
     pipe_through :api
 
-    get  "/", WorkingTimeController, :get_all_working_times
-    get  "/:userID", WorkingTimeController, :get_one_working_time
+    get  "/:userID", WorkingTimeController, :get_all_working_times
+    get  "/:userID/:id", WorkingTimeController, :get_one_working_time
     post "/", WorkingTimeController, :create_working_time
     put "/:userID", WorkingTimeController, :update_working_time
     delete "/:userID", WorkingTimeController, :delete_working_time

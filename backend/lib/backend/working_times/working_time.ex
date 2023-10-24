@@ -14,7 +14,7 @@ defmodule Backend.WorkingTimes.WorkingTime do
   @doc false
   def changeset(working_time, attrs) do
     working_time
-    |> cast(attrs, [:start, :end_time, :status])
-    |> validate_required([:start, :end_time, :status])
+    |> cast(attrs, [:start, :end_time, :status, :user_id])
+    |> validate_required([:start, :end_time, :status, :user_id])
   end
 end
