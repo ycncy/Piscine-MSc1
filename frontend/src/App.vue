@@ -1,14 +1,10 @@
 <template>
-<<<<<<< Updated upstream
   <header>
   </header>
 
   <main>
     <router-view></router-view>
   </main>
-=======
-  <Chart />
->>>>>>> Stashed changes
 </template>
 
 <script>
