@@ -20,7 +20,7 @@ defmodule BackendWeb.Router do
     pipe_through :api
 
     get "/:userID", ClockController, :get_clocks_by_userId
-    post "/", ClockController, :create_clocking_time
+    post "/:userID", ClockController, :create_clocking_time
   end
 
   scope "/api/workingtimes", BackendWeb do
