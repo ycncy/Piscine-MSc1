@@ -1,16 +1,15 @@
-import Store from "@/Store";
 
 const is_logged = () => {
-    return !!Store.state.user;
+    return !!localStorage.getItem("user");
 }
 const get_user = () => {
-    return Store.state.user;
+    return localStorage.getItem("user");
 }
 const set_user = (user) => { 
-    Store.commit("set_user", {user: user});
+    localStorage.setItem("user", user);
 }
 const delete_user = () => {
-    Store.commit("delete_user");
+    localStorage.removeItem("user");
 }   
 export {
     is_logged,
