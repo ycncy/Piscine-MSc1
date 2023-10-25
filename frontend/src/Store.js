@@ -7,7 +7,7 @@ const Store = createStore({
         }
     },
     mutations: {
-        set_user(state, user) {
+        set_user(user) {
             state.user = user;
         },
         delete_user(state) {
