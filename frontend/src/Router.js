@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import User from "@/components/User.vue";
+import Clocks from "@/components/Clocks.vue";
 
 const Router = createRouter({
     history: createWebHistory(),
@@ -7,6 +8,10 @@ const Router = createRouter({
         {
             path: "/user",
             component: User
+        },
+        {
+            path: "/clocks",
+            component: Clocks
         }
     ]
 });
