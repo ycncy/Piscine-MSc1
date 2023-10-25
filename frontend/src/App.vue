@@ -3,14 +3,15 @@
   </header>
 
   <main>
+  <Radar/>
     <router-view></router-view>
   </main>
 </template>
 
 <script>
-import Chart from './components/Chart.vue'
+import Radar from './components/Radar.vue'
 export default {
   name: 'App',
-  components: { Chart }
+  components: { Radar }
 }
 </script>
