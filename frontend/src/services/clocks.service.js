@@ -5,11 +5,7 @@ const clocks_url = "/clocks";
 const get_clock_by_user_id = async (user_id) => {
     try {
         const response = await Axios.get(`${clocks_url}/${user_id}`);
-        return{
-            status_code: response.status,
-            data: response.data.data
-
-        } 
+        return response.data;
     } catch (error) {
         return {
             status_code: error.response.status,
@@ -28,10 +24,7 @@ const create_clocking_time = async (clocking_time, user_id) => {
                }
             }
         );
-        return{
-            status_code: response.status,
-            data: response.data.data
-        } 
+        return response.data;
     } catch (error) {
         return {
             status_code: error.response.status,
