@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <header>
   </header>
@@ -10,5 +7,10 @@
   </main>
 </template>
 
-<style scoped>
-</style>
+<script>
+import Chart from './components/Chart.vue'
+export default {
+  name: 'App',
+  components: { Chart }
+}
+</script>
