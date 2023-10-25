@@ -3,16 +3,16 @@
   </header>
 
   <main>
-  <Radar/>
+  <Line/>
     <router-view></router-view>
   </main>
   <router-link to="/workingtimes">Working times</router-link>
 </template>
 
 <script>
-import Radar from './components/Radar.vue'
+import Line from './components/Line.vue'
 export default {
   name: 'App',
-  components: { Radar }
+  components: { Line }
 }
 </script>

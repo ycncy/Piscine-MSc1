@@ -12,7 +12,7 @@ let answer = await users_service.get_user_by_id(2)
 let vval = new Date('2023-10-25 5:00:00');
 let date1= new Date();
 var HoursDiff = (date1.getTime()-vval.getTime()) / (1000 * 60 * 60);
-alert(Math.round(HoursDiff))
+
 console.log(answer.data);
 
 let variable = [1,2,3,4]
