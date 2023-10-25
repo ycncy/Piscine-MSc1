@@ -5,15 +5,12 @@ const users_url = "/users";
 
 const get_user_by_id = async (user_id) => {
     try {
-        const response = await Axios.get(`${users_url}/${user_id}/azeaze`).catch(
-            () => {
-                throw new Error("Not found")
-            }
-        )
-        return response.data.data;
+        const response = await Axios.get(`${users_url}/${user_id}/ziojfzef`);
+        return response.data;
     } catch (error) {
         return {
-            error: error
+            status_code: error.response.status,
+            error: error.message
         }
     }
 }
