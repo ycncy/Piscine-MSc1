@@ -26,6 +26,19 @@ defmodule BackendWeb.WorkingTimeController do
     end
   end
 
+  def get_list_working_times(conn, _params) do
+    try do
+      query = from(x in WorkingTime, select: x)
+
+      working_times = Repo.all(query)
+
+      render(conn, :index, working_times: working_times)
+    rescue
+      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
+    end
+
+  end
+
   def create_working_time(conn, %{"userID" => user_id}) do
     try do
       {user_id, ""} = Integer.parse(user_id)
@@ -59,7 +72,7 @@ defmodule BackendWeb.WorkingTimeController do
   def update_working_time(conn, %{"id" => id, "working_time" => working_time_params}) do
     try do
       working_time = WorkingTimes.get_working_time!(id)
-      
+
       with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
         render(conn, :show, working_time: working_time)
       end
@@ -69,7 +82,7 @@ defmodule BackendWeb.WorkingTimeController do
   end
 
   def delete_working_time(conn, %{"id" => id}) do
-    try do  
+    try do
       working_time = WorkingTimes.get_working_time!(id)
 
       with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do

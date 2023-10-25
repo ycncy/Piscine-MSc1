@@ -27,6 +27,7 @@ defmodule BackendWeb.Router do
     pipe_through :api
 
     get  "/:userID", WorkingTimeController, :get_all_working_times
+    get  "/", WorkingTimeController, :get_list_working_times
     get  "/:userID/:id", WorkingTimeController, :get_one_working_time
     post "/:userID", WorkingTimeController, :create_working_time
     put "/:id", WorkingTimeController, :update_working_time

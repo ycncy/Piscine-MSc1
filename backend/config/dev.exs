@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :backend, Backend.Repo,
   username: "postgres",
-  password: "PAR_29",
+  password: "FaniryToky61",
   hostname: "localhost",
   database: "time_manager",
   stacktrace: true,
