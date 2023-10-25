@@ -4,8 +4,13 @@ const users_url = "/users";
 
 const get_user_by_id = async (user_id) => {
     try {
-        const response = await Axios.get(`${users_url}/${user_id}`);
-        return response.data;
+        const response = await Axios.get(
+            `${users_url}/${user_id}`
+        );
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
     } catch (error) {
         return {
             status_code: error.response.status,
@@ -25,7 +30,10 @@ const get_user_by_credentials = async (username, email) => {
                 }
             }
         );
-        return response.data;
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
     } catch (error) {
         return {
             status_code: error.response.status,
@@ -46,7 +54,10 @@ const create_user = async (username, email, role) => {
                 }
             }
         );
-        return response.data;
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
     } catch (error) {
         return {
             status_code: error.response.status,
@@ -67,7 +78,10 @@ const update_user = async (username, email, role) => {
                 }
             }
         );
-        return response.data;
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
     } catch (error) {
         return {
             status_code: error.response.status,
@@ -79,7 +93,10 @@ const update_user = async (username, email, role) => {
 const delete_user = async (user_id) => {
     try {
         const response = await Axios.delete(`${users_url}/${user_id}`);
-        return response.data;
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
     } catch (error) {
         return {
             status_code: error.response.status,
