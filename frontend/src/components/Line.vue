@@ -32,7 +32,13 @@ export default {
         datasets: inject('datasets')
       },
       chartOptions: {
-        responsive: true
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Working times chart'
+          },
+        }
       }
     }
   }

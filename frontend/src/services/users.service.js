@@ -2,6 +2,23 @@ import Axios from "@/services/api.service";
 
 const users_url = "/users";
 
+const get_all_users = async () => {
+    try {
+        const response = await Axios.get(
+            `${users_url}/all`
+        );
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
+    } catch (error) {
+        return {
+            status_code: error.response.status,
+            error: error.message
+        }
+    }
+}
+
 const get_user_by_id = async (user_id) => {
     try {
         const response = await Axios.get(
@@ -66,10 +83,10 @@ const create_user = async (username, email, role) => {
     }
 }
 
-const update_user = async (username, email, role) => {
+const update_user = async (user_id, username, email, role) => {
     try {
         const response = await Axios.put(
-            `${users_url}`,
+            `${users_url}/${user_id}`,
             {
                 user: {
                     username: username,
@@ -78,6 +95,7 @@ const update_user = async (username, email, role) => {
                 }
             }
         );
+        console.log(response)
         return {
             status_code: response.status,
             data: response.data.data
@@ -106,6 +124,7 @@ const delete_user = async (user_id) => {
 }
 
 export const users_service = {
+    get_all_users,
     get_user_by_id,
     get_user_by_credentials,
     create_user,
