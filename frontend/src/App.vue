@@ -18,7 +18,6 @@ import Line from './components/Line.vue';
 import User from './components/User.vue';
 export default {
   name: 'App',
-  components: { User }
   components: {
     Line,
     User
