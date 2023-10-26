@@ -7,18 +7,22 @@
 </template>
 
 <script>
-import {users_service} from "../services/users.service.js"
-let answer = await users_service.get_user_by_id(2)
-let vval = new Date('2023-10-25 5:00:00');
-let date1= new Date();
-var HoursDiff = (date1.getTime()-vval.getTime()) / (1000 * 60 * 60);
+import { get_working_times_by_id, get_all_working_times } from "@/services/workingtimes.service";
 
-console.log(answer.data);
 
-let variable = [1,2,3,4]
-let variable2 = [5,6,7,8]
+      let data =await get_all_working_times();
+console.log(data.data[0])
+let time = []
 
-let dataone = [{label:"data one",data:variable},{label:"data two",data:variable2}]
+let date = []
+for (let index = 0; index < data.data.length; index++) {
+  let start=new Date(data.data[index].start_time)
+  let end =new Date(data.data[index].end_time)
+  time.push( ( (end.getTime() ) - ( start.getTime() ) ) / (1000 * 60 * 60) ) 
+  console.log(time)
+  date.push( start.getDate()+"-"+ start.getMonth());
+}
+let dataset = [{label:"Time",data:time}]
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -47,11 +51,17 @@ export default {
   data() {
     return {
       chartData: {
-        labels: [ 'January', 'February', 'March' , 'april','may' ],
-        datasets: dataone
+        labels: date,
+        datasets: dataset
       },
       chartOptions: {
-        responsive: true
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Working times chart'
+          },
+        }
       }
     }
   }
