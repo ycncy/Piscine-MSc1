@@ -1,21 +1,15 @@
 <template>
-  <header>
-    <user/>
-  </header>
-
   <main>
-    <User />  
-    <div class="canvas">
-      <!-- <Line/> -->
-    </div>
+    <User />
     <router-view></router-view>
+    <div class="canvas">
+    </div>
   </main>
 </template>
 
 <script>
 import User from './components/User.vue'
 import Line from './components/Line.vue';
-import User from './components/User.vue';
 export default {
   name: 'App',
   components: {
