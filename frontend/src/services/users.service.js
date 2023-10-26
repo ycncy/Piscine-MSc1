@@ -83,10 +83,10 @@ const create_user = async (username, email, role) => {
     }
 }
 
-const update_user = async (username, email, role) => {
+const update_user = async (user_id, username, email, role) => {
     try {
         const response = await Axios.put(
-            `${users_url}`,
+            `${users_url}/${user_id}`,
             {
                 user: {
                     username: username,
@@ -95,6 +95,7 @@ const update_user = async (username, email, role) => {
                 }
             }
         );
+        console.log(response)
         return {
             status_code: response.status,
             data: response.data.data
