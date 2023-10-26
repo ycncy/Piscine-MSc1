@@ -4,19 +4,21 @@
   </header>
 
   <main>
+    <User />  
     <div class="canvas">
       <!-- <Line/> -->
     </div>
     <router-view></router-view>
   </main>
-  <router-link to="/workingtimes">Working times</router-link>
 </template>
 
 <script>
+import User from './components/User.vue'
 import Line from './components/Line.vue';
 import User from './components/User.vue';
 export default {
   name: 'App',
+  components: { User }
   components: {
     Line,
     User
@@ -24,8 +26,4 @@ export default {
 }
 </script>
 <style>
-  body .canvas {
-    width: 600px;
-    height: 600px;
-  }
 </style>
