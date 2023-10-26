@@ -1,8 +1,18 @@
 <template>
+  <div>
+    <p v-if="selected_user" id="userText">Selected user : {{this.selected_user.username}}</p>
+    <p v-else>No user selected</p>
+  </div>
   <div id="selectUser">
     <h2>Select user in the list</h2>
     <select id='users' @change="setUser($event)">
       <option selected disabled>Select user</option>
+      <option v-for="user in this.users" :key="user.id" :value="JSON.stringify({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      })">{{`${user.username} -- ${user.role}`}}</option>
     </select>
   </div>
 
@@ -74,7 +84,6 @@
     </div>
     <button id="deleteUser" @click="deleteUser">Delete user</button>
   </div>
-
 </template>
 
 <script>
@@ -110,8 +119,10 @@ export default {
   },
   methods: {
     setUser(event) {
-      this.selected_user = event.target.value;
-      authentication_service.set_user(JSON.parse(this.selected_user));
+      this.selected_user = JSON.parse(event.target.value);
+      authentication_service.set_user(this.selected_user);
+      let userText = document.getElementById("userText");
+      userText.innerText = `${this.selected_user.username}`
     },
     getUser() {
       return authentication_service.get_user();
@@ -151,7 +162,6 @@ export default {
           break;
         case 403:
           this.error = "User already exists";
-          console.log(response)
       }
     },
     async deleteUser() {
@@ -170,30 +180,12 @@ export default {
     }
   },
   async mounted() {
-    const popupTriggers = ref({
-      buttonTrigger: false,
-      timedTrigger: false
-    });
-
-    this.user = JSON.parse(this.getUser());
+    this.selected_user = JSON.parse(this.getUser());
 
     await users_service.get_all_users().then(response => {
       this.users = response.data
     });
+  },
 
-    let users_select_html = document.getElementById('users');
-
-    for (const user of this.users) {
-      let select_option = document.createElement("option");
-      select_option.text = `${user.username} -- ${user.role}`;
-      select_option.value = JSON.stringify({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role
-      });
-      users_select_html.append(select_option);
-    }
-  }
 }
 </script>
