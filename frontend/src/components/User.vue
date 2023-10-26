@@ -75,35 +75,6 @@
     <button id="deleteUser" @click="deleteUser">Delete user</button>
   </div>
 
-  <button @click="() => togglePopup('buttonTrigger')">Create user</button>
-  <CreateUser v-if="popupTriggers.buttonTrigger" :togglePopup="() => togglePopup('buttonTrigger')">
-    <h2>Create new User</h2>
-    <form @submit.prevent="createUser">
-      <p v-if="this.error">{{this.error}}</p>
-      <div>
-        <label>Username</label>
-        <input type="text" @change="() => this.error = undefined" name="username" v-model="user_info_to_create.username" required>
-      </div>
-      <div>
-        <label>E-mail</label>
-        <input type="email" @change="() => this.error = undefined" pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}" name="email" v-model="user_info_to_create.email" required>
-      </div>
-      <div>
-        <label>Role</label>
-        <select v-model="user_info_to_create.role" name="role" required>
-          <option value="employee">Employee</option>
-          <option value="manager">Manager</option>
-          <option value="general_manager">General Manager</option>
-        </select>
-      </div>
-      <button type="submit">Create user</button>
-    </form>
-  </CreateUser>
-  <Line
-    id="my-chart-id"
-    :options="chartOptions"
-    :data="chartData"
-  />
 </template>
 
 <script>
@@ -111,22 +82,6 @@ import PopupForm from "@/components/PopupForm.vue";
 import {authentication_service} from "@/services/authentication.service";
 import {users_service} from "@/services/users.service";
 import {ref} from "vue";
-  import CreateUser from "@/components/CreateUser.vue";
-  import { get_working_times_by_id, get_all_working_times } from "@/services/workingtimes.service";
-  import {authentication_service} from "@/services/authentication.service";
-  import {users_service} from "@/services/users.service";
-  import {ref} from "vue";
-  import { Line } from 'vue-chartjs';
-  import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-  } from 'chart.js';
 
 export default {
   name: "User",
@@ -134,13 +89,6 @@ export default {
     const popupTriggers = ref({
       buttonTrigger: false
     });
-  export default {
-    name: "User",
-    components: { Line },
-      setup() {
-      const popupTriggers = ref({
-        buttonTrigger: false
-      });
 
     const togglePopup = (trigger) => {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
@@ -174,77 +122,6 @@ export default {
           this.user_form_info.email,
           this.user_form_info.role,
       );
-      return {
-        popupTriggers,
-        togglePopup
-      }
-    },
-    components: {CreateUser},
-    data() {
-      return {
-        selected_user: {},
-        user_info_to_create: {},
-        users: [],
-        error: undefined,
-        time: [],
-        date: [],
-        dateset:  [{label:"Time",data:this.time}],
-        chartData: {
-          labels: this.date,
-          datasets: this.dataset
-        },
-        chartOptions: {
-          responsive: true,
-          plugins: {
-            title: {
-              display: true,
-              text: 'Working times chart'
-            },
-          }
-        }
-      }
-    },
-    methods: {
-      setUser(event) {
-        this.selected_user = event.target.value;
-        authentication_service.set_user(JSON.parse(this.selected_user));
-        // 
-        // let data = get_working_times_by_id(JSON.parse(this.selected_user).id);
-        // let time = []
-
-        // let date = []
-        // for (let index = 0; index < data.data.length; index++) {
-        //   let start=new Date(data.data[index].start_time)
-        //   let end =new Date(data.data[index].end_time)
-        //   time.push( ( (end.getTime() ) - ( start.getTime() ) ) / (1000 * 60 * 60) ) 
-        //   console.log(time)
-        //   date.push( start.getDate()+"-"+ start.getMonth());
-        // }
-        // let dataset = [{label:"Time",data:time}]
-
-
-        // ChartJS.register(
-        //   CategoryScale,
-        //   LinearScale,
-        //   PointElement,
-        //   LineElement,
-        //   Title,
-        //   Tooltip,
-        //   Legend
-        // )
-
-        // 
-
-      },
-      getUser() {
-        return authentication_service.get_user();
-      },
-      async createUser() {
-        const response = await users_service.create_user(
-            this.user_info_to_create.username,
-            this.user_info_to_create.email,
-            this.user_info_to_create.role,
-        );
 
       switch (response.status_code) {
         case 201:
