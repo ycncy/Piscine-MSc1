@@ -1,31 +1,30 @@
-<script setup>
-import Chart from './components/Chart.vue'
-
-</script>
-
-<template>
-  <main>
-    <User />
-    <router-view></router-view>
-    <div class="canvas">
+<template >
+  <div class="grid grid-cols-[1fr_3fr] h-screen w-screen">
+    <div>
+      <User />
     </div>
-  </main>
+    <div class="h-screen">
+      <Navbar/>
+      <Dashboard/>
+    </div>
+  </div>
 </template>
 
-<<<<<<< HEAD
-
-=======
 <script>
 import User from './components/User.vue'
-import Line from './components/Line.vue';
+import Line from './components/ChartManager/Line.vue';
+import Home from './components/Home.vue';
+import Navbar from "@/components/Navbar.vue";
+import Dashboard from "@/components/Dashboard.vue";
+
 export default {
   name: 'App',
   components: {
+    Dashboard,
+    Navbar,
     Line,
-    User
+    User,
+    Home
   }
 }
 </script>
-<style>
-</style>
->>>>>>> e15263d42d3938f96c2fa43cb749f4444f07b325
