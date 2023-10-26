@@ -55,7 +55,13 @@ export default {
         datasets: dataset
       },
       chartOptions: {
-        responsive: true
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Working times chart'
+          },
+        }
       }
     }
   }

@@ -19,7 +19,7 @@ const get_working_times_by_id = async (user_id) => {
 
 const get_all_working_times = async () => {
     try {
-        const response = await Axios.get(`${workingtimes_url}`);
+        const response = await Axios.get(`${workingtimes_url}/`);
         return {
             status_code: response.status,
             data: response.data.data
