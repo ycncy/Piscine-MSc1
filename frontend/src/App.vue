@@ -3,7 +3,7 @@
   </header>
 
   <main>
-  <Line/>
+    <Line/>
     <router-view></router-view>
   </main>
   <router-link to="/workingtimes">Working times</router-link>
