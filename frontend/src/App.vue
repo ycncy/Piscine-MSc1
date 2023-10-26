@@ -1,10 +1,11 @@
 <template>
   <header>
+    <user/>
   </header>
 
   <main>
     <div class="canvas">
-      <Line/>
+      <!-- <Line/> -->
     </div>
     <router-view></router-view>
   </main>
@@ -12,10 +13,14 @@
 </template>
 
 <script>
-import Line from './components/Line.vue'
+import Line from './components/Line.vue';
+import User from './components/User.vue';
 export default {
   name: 'App',
-  components: { Line }
+  components: {
+    Line,
+    User
+  }
 }
 </script>
 <style>

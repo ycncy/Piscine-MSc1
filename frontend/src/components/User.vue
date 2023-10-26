@@ -29,17 +29,34 @@
       <button type="submit">Create user</button>
     </form>
   </CreateUser>
+  <Line
+    id="my-chart-id"
+    :options="chartOptions"
+    :data="chartData"
+  />
 </template>
 
 <script>
   import CreateUser from "@/components/CreateUser.vue";
-
+  import { get_working_times_by_id, get_all_working_times } from "@/services/workingtimes.service";
   import {authentication_service} from "@/services/authentication.service";
   import {users_service} from "@/services/users.service";
   import {ref} from "vue";
+  import { Line } from 'vue-chartjs';
+  import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  } from 'chart.js';
 
   export default {
     name: "User",
+    components: { Line },
       setup() {
       const popupTriggers = ref({
         buttonTrigger: false
@@ -60,13 +77,56 @@
         selected_user: {},
         user_info_to_create: {},
         users: [],
-        error: undefined
+        error: undefined,
+        time: [],
+        date: [],
+        dateset:  [{label:"Time",data:this.time}],
+        chartData: {
+          labels: this.date,
+          datasets: this.dataset
+        },
+        chartOptions: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Working times chart'
+            },
+          }
+        }
       }
     },
     methods: {
       setUser(event) {
         this.selected_user = event.target.value;
         authentication_service.set_user(JSON.parse(this.selected_user));
+        // 
+        // let data = get_working_times_by_id(JSON.parse(this.selected_user).id);
+        // let time = []
+
+        // let date = []
+        // for (let index = 0; index < data.data.length; index++) {
+        //   let start=new Date(data.data[index].start_time)
+        //   let end =new Date(data.data[index].end_time)
+        //   time.push( ( (end.getTime() ) - ( start.getTime() ) ) / (1000 * 60 * 60) ) 
+        //   console.log(time)
+        //   date.push( start.getDate()+"-"+ start.getMonth());
+        // }
+        // let dataset = [{label:"Time",data:time}]
+
+
+        // ChartJS.register(
+        //   CategoryScale,
+        //   LinearScale,
+        //   PointElement,
+        //   LineElement,
+        //   Title,
+        //   Tooltip,
+        //   Legend
+        // )
+
+        // 
+
       },
       getUser() {
         return authentication_service.get_user();
