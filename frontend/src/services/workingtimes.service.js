@@ -21,7 +21,7 @@ const get_all_working_times = async () => {
     try {
         const response = await Axios.get(`${workingtimes_url}/`);
         return {
-            status_code: response.status,
+            status_code: response,
             data: response.data.data
         }
     } catch (error) {

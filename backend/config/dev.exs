@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :backend, Backend.Repo,
-  username: "postgres",
-  password: "PAR_29",
+ username: "postgres",
+  password: "pass123",
   hostname: "localhost",
-  database: "time_manager",
+  database: "timemanager",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
