@@ -7,6 +7,12 @@ defmodule BackendWeb.UserController do
 
   action_fallback BackendWeb.FallbackController
 
+  def get_all(conn, _params) do
+    users = Users.list_users()
+
+    render(conn, :index, users: users)
+  end
+
   def get_user_by_id(conn, %{"userID" => user_id}) do
     try do
       user = Users.get_user!(user_id)
@@ -28,7 +34,6 @@ defmodule BackendWeb.UserController do
       render(conn, :show, user: user)
     rescue
       FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "No user found for credentials : username : #{username} and email : #{email}"}))
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "No user found for credentials : username : #{username} and email : #{email}"}))
     end
   end
 
@@ -41,7 +46,6 @@ defmodule BackendWeb.UserController do
       end
     rescue
       Ecto.ConstraintError -> send_resp(conn, 403, Poison.encode!(%{error: "ConstraintError", message: "User already exists"}))
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "Not found", message: "No user found for credentials"}))
     end
   end
 

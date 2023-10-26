@@ -9,6 +9,7 @@ defmodule BackendWeb.Router do
   scope "/api/users", BackendWeb do
     pipe_through :api
 
+    get "/all", UserController, :get_all
     get "/", UserController, :get_user_by_credentials
     post "/", UserController, :create_user
     get "/:userID", UserController, :get_user_by_id
