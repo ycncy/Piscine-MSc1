@@ -7,19 +7,7 @@
 </template>
 
 <script>
-import { get_working_times_by_id, get_all_working_times } from "@/services/workingtimes.service";
-import {users_service} from "../services/users.service.js"
-let answer = await users_service.get_user_by_id(2)
-let vval = new Date('2023-10-25 5:00:00');
-let date1= new Date();
-var HoursDiff = (date1.getTime()-vval.getTime()) / (1000 * 60 * 60);
-
-console.log(answer.data);
-
-let variable = [1,2,3,4]
-let variable2 = [5,6,7,8]
-
-let dataone = [{label:"data one",data:variable},{label:"data two",data:variable2}]
+import {inject} from 'vue'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -48,8 +36,8 @@ export default {
   data() {
     return {
       chartData: {
-        labels: [ 'Lundi', 'Mardi', 'Mercredi' , 'april','may' ],
-        datasets: dataone
+        labels: inject('date'),
+        datasets: inject('datasets')
       },
       chartOptions: {
         responsive: true
