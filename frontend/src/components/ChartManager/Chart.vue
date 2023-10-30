@@ -1,37 +1,37 @@
 <template>
-    <p class="text-center text-4xl py-4">ChartManager</p>
-    <div class="grid grid-cols-2 h-4/5 m-auto place-items-center">
-      <div class="bg-gray-100 p-8 rounded">
-        <Line :dataset="this.user_working_times" :date="this.date"/>
-      </div>
-      <div class="bg-gray-100 p-8 rounded">
-        <Bar :dataset="this.user_working_times" :date="this.date"/>
-      </div>
-      <div class="bg-gray-100 p-8 rounded">
-        <Pie :dataset="this.user_working_times" :date="this.date"/>
-      </div>
-      <div class="bg-gray-100 p-8 rounded">
-        <Radar :dataset="this.user_working_times" :date="this.date"/>
-      </div>
+  <p class="text-center text-4xl py-4">ChartManager</p>
+  <div class="grid grid-cols-2 h-4/5 m-auto place-items-center">
+    <div class="bg-gray-100 p-8 rounded">
+      <Line :dataset="this.user_working_times" :date="this.date"/>
     </div>
+    <div class="bg-gray-100 p-8 rounded">
+      <Bar :dataset="this.user_working_times" :date="this.date"/>
+    </div>
+    <div class="bg-gray-100 p-8 rounded">
+      <Pie :dataset="this.user_working_times" :date="this.date"/>
+    </div>
+    <div class="bg-gray-100 p-8 rounded">
+      <Radar :dataset="this.user_working_times" :date="this.date"/>
+    </div>
+  </div>
 </template>
 
 <script>
-import { get_working_times_by_id } from "@/services/workingtimes.service";
+import {get_working_times_by_id} from "@/services/workingtimes.service";
 import Line from "@/components/ChartManager/Line.vue";
 import Bar from "@/components/ChartManager/Bar.vue";
 import Pie from "@/components/ChartManager/Pie.vue";
 import Radar from "@/components/ChartManager/Radar.vue";
 
 export default {
-  name:'chart',
+  name: 'chart',
   data() {
     return {
       user_working_times: [],
       date: []
     }
   },
-  components:{Line, Bar, Pie, Radar},
+  components: {Line, Bar, Pie, Radar},
   async mounted() {
     let data = await get_working_times_by_id(this.$route.params.userID);
     let time = []

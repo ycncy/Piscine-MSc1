@@ -15,20 +15,22 @@ defmodule BackendWeb.ClockController do
   end
 
   def get_clocks_by_userId(conn, %{"userID" => id}) do
-    try do
-      {user_id_int, ""} = Integer.parse(id)
-
-      query = from(x in Clock, where: x.user_id == ^user_id_int)
-
-      clocks = Repo.all(query)
-
-      if length(clocks) == 0 do
-        Repo.get_by!(User, id: user_id_int)
-      end
-
-      render(conn, :index, clocks: clocks)
-    rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User not found"}))
+    case Integer.parse(id) do
+      {user_id_int, _} ->
+         case Repo.get(User, user_id_int) do
+            nil ->
+              send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+            user ->
+              query = from(x in Clock, where: x.user_id == ^user_id_int)
+            case Repo.all(query) do
+              [] ->
+                send_resp(conn, 404, Poison.encode!(%{error: "ClocksNotFound", message: "No clocks found for the user"}))
+              clocks ->
+                render(conn, :index, clocks: clocks, user: user)
+            end
+         end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
