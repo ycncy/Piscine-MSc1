@@ -14,8 +14,8 @@ defmodule BackendWeb.ClockController do
     render(conn, :index, clocks: clocks)
   end
 
-  def get_clocks_by_userId(conn, %{"userID" => id}) do
-    case Integer.parse(id) do
+  def get_clocks_by_userId(conn, %{"userID" => user_id}) do
+    case Integer.parse(user_id) do
       {user_id_int, _} ->
          case Repo.get(User, user_id_int) do
             nil ->
