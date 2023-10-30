@@ -21,9 +21,9 @@ defmodule BackendWeb.WorkingTimeController do
             working_times = Repo.all(query)
 
             case working_times do
-              [] ->
-                render(conn, :index, working_times: working_times)
               _ ->
+                render(conn, :index, working_times: working_times)
+              :error ->
                 send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
             end
         end
@@ -69,7 +69,7 @@ defmodule BackendWeb.WorkingTimeController do
   def get_one_working_time(conn, %{"userID" => user_id, "id" => id}) do
     case Integer.parse(user_id) do
       {user_id_int, ""} ->
-        case Repo.get(User, user_id) do
+        case Repo.get(User, user_id_int) do
           nil ->
             send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
           _ ->

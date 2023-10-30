@@ -1,43 +1,51 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="py-4 col-md-12 flex flex-col justify-center items-center">
-        <h1 class="text-center font-bold text-4xl">Working times List</h1>
-        <table class="w-[80%] rounded text-sm text-left text-gray-500 dark:text-gray-400 m-4">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" class="px-6 py-3">User_id</th>
-            <th scope="col" class="px-6 py-3">Start_time</th>
-            <th scope="col" class="px-6 py-3">End_time</th>
-            <th scope="col" class="px-6 py-3">Status</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(workingtimes, i) in workingtimes" :key="i" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-            <td class="px-6 py-4">{{ workingtimes.user_id }}</td>
-            <td class="px-6 py-4">{{ workingtimes.start_time }}</td>
-            <td class="px-6 py-4">{{ workingtimes.end_time }}</td>
-            <td class="px-6 py-4">{{ workingtimes.status }}</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="p-4 gap-3 col-md-12 flex flex-col border-blue border">
+    <p class="text-center align-middle text-4xl" v-if="this.workingtimes.length === 0">No working times found for this user</p>
+    <div v-else class="flex flex-col gap-5">
+      <h1 class="font-bold text-3xl">Working times List</h1>
+      <table class="rounded-xl shadow-md text-l text-left text-gray-500 bg-gray-50">
+        <thead class="text-gray-700 uppercase border-gray-200 border-b">
+        <tr>
+          <th scope="col" class="px-6 py-3">Username</th>
+          <th scope="col" class="px-6 py-3">Start Time</th>
+          <th scope="col" class="px-6 py-3">End Time</th>
+          <th scope="col" class="px-6 py-3">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(workingtimes, i) in workingtimes" :key="i"
+            class="">
+          <td class="px-6 py-4">{{ current_user.username }}</td>
+          <td class="px-6 py-4">{{ workingtimes.start_time }}</td>
+          <td class="px-6 py-4">{{ workingtimes.end_time }}</td>
+          <td class="px-6 py-4">{{ workingtimes.status }}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <script>
 import {get_working_times_by_id} from "@/services/workingtimes.service";
+import User from "@/App.vue";
+import {users_service} from "@/services/users.service";
 
 export default {
   name: "WorkingTimes",
+  components: {User},
   data() {
     return {
-      workingtimes: null,
+      workingtimes: [],
+      current_user: undefined
     };
   },
   methods: {
     getWorkingtimes: function () {
+      users_service.get_user_by_id(this.$route.params.userID).then((response) => {
+        this.current_user = response.data
+      })
+
       get_working_times_by_id(this.$route.params.userID).then((result) => {
         this.workingtimes = result.data;
       });

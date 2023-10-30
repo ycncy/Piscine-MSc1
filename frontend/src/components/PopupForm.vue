@@ -1,8 +1,8 @@
 <template>
   <div id="popup">
-    <div id="innerPopup">
+    <div id="innerPopup" class="bg-white p-6 rounded-3xl flex flex-col gap-4 text-gray-500 w-1/3" >
       <slot />
-      <button id="close" @click="togglePopup()">
+      <button class="rounded-lg text-white p-2 bg-red-500" id="close" @click="togglePopup()">
         Cancel
       </button>
     </div>
@@ -23,14 +23,9 @@
     left: 0;
     bottom: 0;
     z-index: 99;
-    background: rgb(0, 0, 0, 0.2);
+    background: rgb(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-
-    #innerPopup {
-      background: white;
-      padding: 4%;
-    }
   }
 </style>
