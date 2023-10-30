@@ -95,10 +95,15 @@ defmodule BackendWeb.WorkingTimeController do
   def update_working_time(conn, %{"id" => id, "working_time" => working_time_params}) do
     case Integer.parse(id) do
       {id_int, ""} ->
-        working_time = WorkingTimes.get_working_time!(id)
+        working_time = Repo.get(WorkingTime, id_int)
 
-        with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
-          render(conn, :show, working_time: working_time)
+        case working_time do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+          _ ->
+            with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
+              send_resp(conn, :no_content, "")
+            end
         end
       :error ->
         send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
@@ -108,10 +113,15 @@ defmodule BackendWeb.WorkingTimeController do
   def delete_working_time(conn, %{"id" => id}) do
     case Integer.parse(id) do
       {id_int, ""} ->
-        working_time = WorkingTimes.get_working_time!(id)
+        working_time = Repo.get(WorkingTime, id_int)
 
-        with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
-          send_resp(conn, :no_content, "")
+        case working_time do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+          _ ->
+            with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
+              send_resp(conn, :no_content, "")
+            end
         end
       :error ->
         send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
