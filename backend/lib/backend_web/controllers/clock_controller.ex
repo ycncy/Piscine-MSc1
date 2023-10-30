@@ -35,17 +35,22 @@ defmodule BackendWeb.ClockController do
   end
 
   def create_clocking_time(conn, %{"userID" => user_id}) do
-    try do
-      {user_id, ""} = Integer.parse(user_id)
-      clock_params = Map.merge(%{"user_id" => user_id}, conn.body_params["clock"])
+    case Integer.parse(user_id) do
+      {user_id, ""} ->
+        case Repo.get(User, user_id) do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+          _ ->
+            clock_params = Map.merge(%{"user_id" => user_id}, conn.body_params["clock"])
 
-      with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock_params) do
-        conn
-        |> put_status(:created)
-        |> render(:show, clock: clock)
-      end
-    rescue
-      Ecto.ConstraintError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User #{user_id} not found"}))
+            with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock_params) do
+              conn
+              |> put_status(:created)
+              |> render(:show, clock: clock)
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 end
