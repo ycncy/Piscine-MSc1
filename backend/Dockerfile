@@ -11,4 +11,4 @@ RUN mix local.hex --force && \
     mix archive.install --force hex phx_new && \
     mix deps.get
 
-ENTRYPOINT ["/bin/bash", "/backend-app/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/backend-app/entrypoint.sh"]
