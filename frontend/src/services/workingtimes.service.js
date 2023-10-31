@@ -32,8 +32,51 @@ const get_all_working_times = async () => {
     }
 }
 
-export {    
+const update_working_time = async (working_time_id, start_time, end_time, status) => {
+    try {
+        const response = await Axios.put(
+            `${workingtimes_url}/${working_time_id}`,
+            {
+                working_time: {
+                    start_time: start_time,
+                    end_time: end_time,
+                    status: status
+                }
+            }
+        );
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
+    } catch (error) {
+        return {
+            status_code: error.response.status,
+            error: error.message
+        }
+    }
+}
+
+const delete_working_time = async (working_time_id) => {
+    try {
+        const response = await Axios.delete(
+            `${workingtimes_url}/${working_time_id}`,
+        );
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
+    } catch (error) {
+        return {
+            status_code: error.response.status,
+            error: error.message
+        }
+    }
+}
+
+export const working_time_service = {
     get_working_times_by_id,
-    get_all_working_times
+    get_all_working_times,
+    update_working_time,
+    delete_working_time
 }
 

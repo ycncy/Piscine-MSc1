@@ -95,7 +95,6 @@ const update_user = async (user_id, username, email, role) => {
                 }
             }
         );
-        console.log(response)
         return {
             status_code: response.status,
             data: response.data.data

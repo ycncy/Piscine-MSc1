@@ -24,7 +24,7 @@
   </template>
 
   <script>
-  import { get_working_times_by_id } from "@/services/workingtimes.service";
+  import { working_time_service } from "@/services/workingtimes.service";
   import Line from "@/components/ChartManager/Line.vue";
   import Bar from "@/components/ChartManager/Bar.vue";
   import Pie from "@/components/ChartManager/Pie.vue";
@@ -41,7 +41,7 @@
     },
     components: { Line, Bar, Pie, Radar },
     async mounted() {
-      let data = await get_working_times_by_id(this.$route.params.userID);
+      let data = await working_time_service.get_working_times_by_id(this.$route.params.userID);
       let time = [];
 
       for (let index = 0; index < data.data.length; index++) {

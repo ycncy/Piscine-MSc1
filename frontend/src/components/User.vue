@@ -73,7 +73,7 @@
     </div>
     <div id="selectUser">
       <div class="flex flex-col gap-2 p-4">
-        <select class="border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id='users'
+        <select class="border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5" id='users'
                 @change="setSelectedUser($event)">
           <option selected disabled>Select user</option>
           <option v-for="user in this.users" class="text-gray-900" :key="user.id" :value="JSON.stringify({
@@ -187,7 +187,7 @@ export default {
     });
 
     await users_service.get_all_users().then(response => {
-      this.users = response.data
+      this.users = response.data;
     });
   },
 }
