@@ -1,8 +1,5 @@
 <template >
-  <div class="grid grid-cols-[1fr_5fr] h-screen">
-    <Navbar/>
-    <router-view :key="$route.path"></router-view>
-  </div>
+  <router-view></router-view>
 </template>
 
 <script>

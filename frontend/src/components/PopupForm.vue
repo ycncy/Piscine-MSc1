@@ -1,6 +1,6 @@
 <template>
   <div id="popup">
-    <div id="innerPopup" class="bg-white p-6 rounded-3xl flex flex-col gap-4 text-gray-500 w-1/3" >
+    <div id="innerPopup" class="bg-[#2C2C2C] p-6 rounded-3xl flex flex-col gap-4 text-gray-500 w-1/3" >
       <slot />
       <button class="rounded-lg text-white p-2 bg-red-500" id="close" @click="togglePopup()">
         Cancel

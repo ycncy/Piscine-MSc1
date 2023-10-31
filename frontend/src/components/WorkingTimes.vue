@@ -1,8 +1,7 @@
 <template>
-  <div class="p-4 gap-3 col-md-12 flex flex-col border-blue border">
+  <div class="p-4 gap-3 col-md-12 flex flex-col">
     <p class="text-center align-middle text-4xl" v-if="this.workingtimes.length === 0">No working times found for this user</p>
     <div v-else class="flex flex-col gap-5">
-      <h1 class="font-bold text-3xl">Working times List</h1>
       <table class="rounded-xl shadow-md text-l text-left text-gray-500 bg-gray-50">
         <thead class="text-gray-700 uppercase border-gray-200 border-b">
         <tr>
@@ -15,10 +14,10 @@
         <tbody>
         <tr v-for="(workingtimes, i) in workingtimes" :key="i"
             class="">
-          <td class="px-6 py-4">{{ current_user.username }}</td>
-          <td class="px-6 py-4">{{ workingtimes.start_time }}</td>
-          <td class="px-6 py-4">{{ workingtimes.end_time }}</td>
-          <td class="px-6 py-4">{{ workingtimes.status }}</td>
+          <td class="px-6 py-6">{{ current_user.username }}</td>
+          <td class="px-6 py-6">{{ workingtimes.start_time }}</td>
+          <td class="px-6 py-6">{{ workingtimes.end_time }}</td>
+          <td class="px-6 py-6">{{ workingtimes.status }}</td>
         </tr>
         </tbody>
       </table>

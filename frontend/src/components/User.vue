@@ -1,28 +1,9 @@
 <template>
-  <div class="flex flex-row justify-between shadow-md gap-9 bg-white text-white items-center m-4 rounded-3xl">
-    <div id="selectUser" class="w-[40%] p-4 flex flex-col align-middle items-left">
-      <div class="flex flex-row h-12 gap-2">
-        <select class="p-2 text-gray-500 bg-gray-100 w-[70%] rounded focus:ring-0 outline-none" id='users'
-                @change="setSelectedUser($event)">
-          <option selected disabled>Select user</option>
-          <option v-for="user in this.users" class="text-gray-700" :key="user.id" :value="JSON.stringify({
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            })">
-            {{ `${user.username} -- ${user.role}` }}
-          </option>
-        </select>
-
-        <button class="rounded bg-blue-600 w-[30%]" @click="redirectTo">Select user</button>
-      </div>
-    </div>
-
+  <div class="bg-[#232323] text-white flex flex-col py-5 items-center">
     <div>
       <div id="createUser">
-        <PopupForm v-if="popupTriggers.trigger_create" :togglePopup="() => togglePopup('trigger_create')">
-          <form class="text-gray-500 flex flex-col gap-6" @submit.prevent="createUser" action="/">
+        <PopupForm class="text-white" v-if="popupTriggers.trigger_create" :togglePopup="() => togglePopup('trigger_create')">
+          <form class="text-white flex flex-col gap-6" @submit.prevent="createUser" action="/">
             <h1 class="text-2xl text-center">Create user</h1>
             <p v-if="this.error" class="text-red-500">{{ this.error }}</p>
             <div class="flex flex-col gap-2">
@@ -52,11 +33,11 @@
           </form>
         </PopupForm>
       </div>
-      <div id="updateUser" class="text-black">
+      <div id="updateUser" class="text-white">
         <PopupForm v-if="popupTriggers.trigger_update" :togglePopup="() => togglePopup('trigger_update')">
-          <h1 class="text-2xl text-center">Update user</h1>
-          <h1 class="text-2xl text-center">{{ this.current_user.username }}</h1>
-          <form class="text-gray-500 flex flex-col gap-6" @submit.prevent="updateUser" action="/">
+          <h1 class="text-2xl text-center text-white">Update user</h1>
+          <h1 class="text-2xl text-center text-white">{{ this.current_user.username }}</h1>
+          <form class="text-white flex flex-col gap-6" @submit.prevent="updateUser" action="/">
             <p v-if="this.error">{{ this.error }}</p>
             <div class="flex flex-col gap-2">
               <label>Username</label>
@@ -86,11 +67,35 @@
         </PopupForm>
       </div>
     </div>
+    <div class="border-b py-6">
+      <p class="text-3xl" v-if="this.current_user">Hello, {{this.current_user.username}}</p>
+      <p v-else>No user selected</p>
+    </div>
+    <div id="selectUser">
+      <div class="flex flex-col gap-2 p-4">
+        <select class="border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id='users'
+                @change="setSelectedUser($event)">
+          <option selected disabled>Select user</option>
+          <option v-for="user in this.users" class="text-gray-900" :key="user.id" :value="JSON.stringify({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            })">
+            {{ `${user.username} -- ${user.role}` }}
+          </option>
+        </select>
 
-    <div class="flex flex-row gap-4 p-4 items-center">
-      <button class="rounded bg-blue-600 p-2 h-12" @click="() => togglePopup('trigger_create')">Create user</button>
-      <button class="rounded bg-blue-600 p-2 h-12" @click="() => togglePopup('trigger_update')">Update user</button>
-      <button class="rounded bg-blue-600 p-2 h-12" id="deleteUser" @click="deleteUser">Delete user</button>
+        <button class="p-4 w-full flex justify-center items-center" @click="redirectTo">Select
+          user
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col p-4 items-center">
+      <button class="px-4 py-8 h-10 flex items-center" @click="() => togglePopup('trigger_create')">Create user</button>
+      <button class="px-4 py-8 h-10 flex items-center" @click="() => togglePopup('trigger_update')">Update user</button>
+      <button class="px-4 py-8 h-10 flex items-center" id="deleteUser" @click="deleteUser">Delete user</button>
     </div>
   </div>
 </template>
