@@ -2,8 +2,8 @@
   <div class="p-4 gap-3 col-md-12 flex flex-col">
     <p class="text-center align-middle text-4xl" v-if="this.working_times.length === 0">No working times found for this user</p>
     <div v-else class="flex flex-col gap-5">
-      <table class="rounded-2xl shadow-md text-l text-left text-gray-500 bg-gray-50">
-        <thead class="text-gray-700 uppercase border-gray-200 border-b">
+      <table class="rounded-2xl shadow-md text-l text-left text-gray-500 bg-[#232323]">
+        <thead class="text-gray-500 uppercase border-gray-200 border-b">
         <tr>
           <th scope="col" class="px-6 py-3 rounded-2xl">Username</th>
           <th scope="col" class="px-6 py-3 rounded-2xl">Start Time</th>
