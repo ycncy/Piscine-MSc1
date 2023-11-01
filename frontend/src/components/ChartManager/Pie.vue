@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import {inject} from 'vue'
 import { Pie } from 'vue-chartjs'
 import {
   Chart as ChartJS,

@@ -1,11 +1,9 @@
 <template>
-  <div class="bg-[#242424]">
-    <div class="flex justify-between">
-      <Navbar/>
-      <div class="flex flex-col w-full h-screen">
-        <User />
-        <router-view class="h-screen w-full" :key="$route.path"></router-view>
-      </div>
+  <div class="bg-[#242424] flex justify-between min-h-screen">
+    <Navbar/>
+    <div class="flex flex-col w-full min-h-screen">
+      <User/>
+      <router-view class="min-h-screen w-full" :key="$route.path"></router-view>
     </div>
   </div>
 </template>
