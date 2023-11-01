@@ -1,43 +1,41 @@
 import {createRouter, createWebHistory} from "vue-router";
-import User from "@/components/User.vue";
+import WorkingTimeManager from "@/components/WorkingTimeManager/WorkingTimeManager.vue";
+import Chart from "@/components/ChartManager/Chart.vue";
 import Clocks from "@/components/Clocks.vue";
-import WorkingTimes from "@/components/WorkingTimes.vue";
-import Line from "@/components/Line.vue"
-import Bar from "@/components/Bar.vue"
-import Radar from "@/components/Radar.vue"
-import Pie from "@/components/Pie.vue"
+import User from "@/components/User.vue";
+import UserLayout from "@/components/UserLayout.vue";
+
+const routes = [
+    {
+        path: '/dashboard',
+        component: UserLayout,
+        children: [
+            {
+                path: '',
+                component: User,
+            },
+            {
+                path: 'workingTimes/:userID',
+                component: WorkingTimeManager,
+                name: "WorkingTimes",
+            },
+            {
+                path: 'clockManager/:userID',
+                component: Clocks,
+                name: "ClockManager",
+            },
+            {
+                path: 'chartManager/:userID',
+                component: Chart,
+                name: "ChartManager",
+            },
+        ],
+    },
+];
+
 const Router = createRouter({
     history: createWebHistory(),
-    routes: [
-        {
-            path: "/workingtimes",
-            component: WorkingTimes
-        },
-        {
-            path: "/clocks",
-            component: Clocks
-        },
-        {
-            path: "/Line",
-            component: Line
-        
-        },
-        {
-            path: "/Bar",
-            component: Bar
-        
-        },
-        {
-            path: "/Pie",
-            component: Pie
-        
-        },
-        {
-            path: "/Radar",
-            component: Radar
-        
-        }
-    ]
+    routes
 });
 
 export default Router;

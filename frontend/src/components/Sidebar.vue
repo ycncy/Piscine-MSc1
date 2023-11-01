@@ -27,7 +27,7 @@
 
 
 <script>
-import {users_service} from "../services/users.service.js"
+import {users_service} from "@/services/users.service.js"
 export default {
     name: 'Sidebar',
     data() {

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5434:5434"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DATABASE: ${PGDATABASE}
+    command:
+      - -p 5434
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/backend-app
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/frontend-app
+      - /frontend/node_modules
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend

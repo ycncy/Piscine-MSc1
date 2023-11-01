@@ -5,91 +5,125 @@ defmodule BackendWeb.WorkingTimeController do
   alias Backend.Repo
   alias Backend.WorkingTimes
   alias Backend.WorkingTimes.WorkingTime
+  alias Backend.Users.User
 
   action_fallback BackendWeb.FallbackController
 
   def get_all_working_times(conn, %{"userID" => user_id}) do
-    try do
-      {user_id_int, ""} = Integer.parse(user_id)
+    case Integer.parse(user_id) do
+      {user_id_int, _} ->
+        case Repo.get(User, user_id_int) do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+          _ ->
+            query = from(x in WorkingTime, where: x.user_id == ^user_id_int)
 
-      query = from(x in WorkingTime, where: x.user_id == ^user_id_int)
+            working_times = Repo.all(query)
 
-      working_times = Repo.all(query)
-
-      if length(working_times) == 0 do
-        Repo.get_by!(User, id: user_id_int)
-      end
-
-      render(conn, :index, working_times: working_times)
-    rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User #{user_id} not found"}))
+            case working_times do
+              :error ->
+                send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
+              _ ->
+                render(conn, :index, working_times: working_times)
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
   def get_list_working_times(conn, _params) do
-    try do
-      query = from(x in WorkingTime, select: x)
+    query = from(x in WorkingTime, select: x)
 
-      working_times = Repo.all(query)
+    working_times = Repo.all(query)
 
-      render(conn, :index, working_times: working_times)
-    rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
+    case working_times do
+      [] ->
+        render(conn, :index, working_times: working_times)
+      _ ->
+        send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
     end
-
   end
 
   def create_working_time(conn, %{"userID" => user_id}) do
-    try do
-      {user_id, ""} = Integer.parse(user_id)
-      params = Map.merge(%{"user_id" => user_id}, conn.body_params["working_time"])
+    case Integer.parse(user_id) do
+      {user_id_int, _} ->
+        case Repo.get(User, user_id_int) do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+          _ ->
+            params = Map.merge(%{"user_id" => user_id}, conn.body_params["working_time"])
 
-      with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.create_working_time(params) do
-        conn
-        |> put_status(:created)
-        |> render(:show, working_time: working_time)
-      end
-    rescue
-      Ecto.ConstraintError ->
-        send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "User #{user_id} not found"}))
-      Protocol.UndefinedError ->
-        send_resp(conn , 404 , Poison.encode!(%{error: "NoResultError", message: "Invalid Route"}))
+            with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.create_working_time(params) do
+              conn
+              |> put_status(:created)
+              |> render(:show, working_time: working_time)
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
   def get_one_working_time(conn, %{"userID" => user_id, "id" => id}) do
-    try do
-      {user_id_int, ""} = Integer.parse(user_id)
-      {working_time_id_int, ""} = Integer.parse(id)
-      working_time = Repo.get_by!(WorkingTime, user_id: user_id_int, id: working_time_id_int)
+    case Integer.parse(user_id) do
+      {user_id_int, ""} ->
+        case Repo.get(User, user_id_int) do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+          _ ->
+            case Integer.parse(id) do
+              {working_time_id_int, ""} ->
+                working_time = Repo.get_by(WorkingTime, user_id: user_id_int, id: working_time_id_int)
 
-      render(conn, :show, working_time: working_time)
-    rescue
-      Ecto.NoResultsError -> send_resp(conn , 404 , Poison.encode!(%{error: "NoResultError", message: "No result found for user id : #{user_id} and working time id : #{id}"}))
+                case working_time do
+                  nil ->
+                    send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+                  _ ->
+                    render(conn, :show, working_time: working_time)
+                end
+              :error ->
+                 send_resp(conn, 400, Poison.encode!(%{error: "InvalidWorkingTimeID", message: "Invalid working time ID format"}))
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
   def update_working_time(conn, %{"id" => id, "working_time" => working_time_params}) do
-    try do
-      working_time = WorkingTimes.get_working_time!(id)
+    case Integer.parse(id) do
+      {id_int, ""} ->
+        working_time = Repo.get(WorkingTime, id_int)
 
-      with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
-        render(conn, :show, working_time: working_time)
-      end
-    rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "Working time #{id} not found"}))
+        case working_time do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+          _ ->
+            with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
+              render(conn, :show, working_time: working_time)
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
   def delete_working_time(conn, %{"id" => id}) do
-    try do
-      working_time = WorkingTimes.get_working_time!(id)
+    case Integer.parse(id) do
+      {id_int, ""} ->
+        working_time = Repo.get(WorkingTime, id_int)
 
-      with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
-        send_resp(conn, :no_content, "")
-      end
-    rescue
-      Ecto.NoResultsError -> send_resp(conn , 404 , Poison.encode!(%{error: "NoResultError", message: "Working time #{id} not found"}))
+        case working_time do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+          _ ->
+            with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
+              send_resp(conn, :no_content, "")
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 end
