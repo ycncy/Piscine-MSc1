@@ -1,8 +1,10 @@
 <template>
-  <div class="bg-[#232323] text-white flex flex-col py-5 items-center">
+  <div class="bg-[#242424] h-16 text-white flex flex-row p-6 justify-between items-center">
+    <h1 class="text-xl">Time Manager</h1>
     <div>
       <div id="createUser">
-        <PopupForm class="text-white" v-if="popupTriggers.trigger_create" :togglePopup="() => togglePopup('trigger_create')">
+        <PopupForm class="text-white" v-if="popupTriggers.trigger_create"
+                   :togglePopup="() => togglePopup('trigger_create')">
           <form class="text-white flex flex-col gap-6" @submit.prevent="createUser" action="/">
             <h1 class="text-2xl text-center">Create user</h1>
             <p v-if="this.error" class="text-red-500">{{ this.error }}</p>
@@ -67,35 +69,34 @@
         </PopupForm>
       </div>
     </div>
-    <div class="border-b py-6">
-      <p class="text-3xl" v-if="this.current_user">Hello, {{this.current_user.username}}</p>
-      <p v-else>No user selected</p>
-    </div>
-    <div id="selectUser">
-      <div class="flex flex-col gap-2 p-4">
-        <select class="border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5" id='users'
-                @change="setSelectedUser($event)">
-          <option selected disabled>Select user</option>
-          <option v-for="user in this.users" class="text-gray-900" :key="user.id" :value="JSON.stringify({
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            })">
-            {{ `${user.username} -- ${user.role}` }}
-          </option>
-        </select>
+    <div id="selectUser" class="w-1/2 flex flex-row justify-end items-center">
+      <div class="flex flex-row w-1/3 justify-around rounded-2xl bg-[#161717]">
+        <div class="flex flex-col gap-2 w-3/4 justify-center">
+          <input
+              type="text"
+              v-model="searchQuery"
+              @input="searchUsers"
+              placeholder="Search user"
+              class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent appearance-none dark:text-gray-400 dark:border-gray-500 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          />
 
-        <button class="p-4 w-full flex justify-center items-center" @click="redirectTo">Select
-          user
+          <ul class="text-gray-400 flex flex-col rounded text-sm absolute top-14 bg-[#161717] border-gray-600" v-if="visibleResults && searchResults.length > 0">
+              <button class="p-2 hover:bg-zinc-50 hover:text-zinc-900 text-start" v-for="(result, index) in searchResults" :key="index" @click="setSelectedUser(result)">{{ result.username }}</button>
+          </ul>
+        </div>
+        <button @click="redirectTo" class="text-white">
+          <svg class="w-4 h-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+          </svg>
         </button>
       </div>
-    </div>
-
-    <div class="flex flex-col p-4 items-center">
-      <button class="px-4 py-8 h-10 flex items-center" @click="() => togglePopup('trigger_create')">Create user</button>
-      <button class="px-4 py-8 h-10 flex items-center" @click="() => togglePopup('trigger_update')">Update user</button>
-      <button class="px-4 py-8 h-10 flex items-center" id="deleteUser" @click="deleteUser">Delete user</button>
+      <div class="flex flex-row w-1/4 justify-evenly items-center">
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_create')" type="button"><span class="material-symbols-outlined"> person_add </span></button>
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_update')" type="button"><span class="material-symbols-outlined"> manage_accounts </span></button>
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="deleteUser" type="button"><span class="material-symbols-outlined">person_remove</span></button>
+      </div>
+      <label for="toggleB" class="flex items-center cursor-pointer">
+      </label>
     </div>
   </div>
 </template>
@@ -107,6 +108,18 @@ import {ref} from "vue";
 
 export default {
   name: "User",
+  data() {
+    return {
+      current_user: undefined,
+      selected_user: {},
+      user_form_info: {},
+      users: [],
+      error: undefined,
+      searchQuery: "",
+      searchResults: [],
+      visibleResults: false
+    }
+  },
   setup() {
     const popupTriggers = ref({
       trigger_create: false,
@@ -122,23 +135,16 @@ export default {
     }
   },
   components: {PopupForm},
-  data() {
-    return {
-      current_user: undefined,
-      selected_user: {},
-      user_form_info: {},
-      users: [],
-      error: undefined
-    }
-  },
   methods: {
     async redirectTo() {
       this.$router.push({name: "WorkingTimes", params: {userID: this.selected_user.id}});
 
       this.current_user = this.selected_user;
     },
-    setSelectedUser(event) {
-      this.selected_user = JSON.parse(event.target.value);
+    setSelectedUser(user) {
+      this.searchQuery = user.username;
+      this.selected_user = user;
+      this.visibleResults = false
     },
     async createUser() {
       const response = await users_service.create_user(
@@ -175,6 +181,17 @@ export default {
           this.error = "User already exists";
       }
     },
+    searchUsers() {
+      const query = this.searchQuery.toLowerCase();
+
+      this.searchResults = this.users.filter((user) => {
+        const userString = `${user.username}`.toLowerCase();
+        this.visibleResults = true;
+        return userString.includes(query);
+      });
+
+      this.selected_user = {};
+    },
   },
   async mounted() {
     const user_id = this.$route.params.userID;
@@ -192,3 +209,10 @@ export default {
   },
 }
 </script>
+
+<style>
+input:checked ~ .dot {
+  transform: translateX(100%);
+  background-color: #48bb78;
+}
+</style>

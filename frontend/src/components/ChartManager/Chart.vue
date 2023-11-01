@@ -1,5 +1,5 @@
   <template>
-    <div class="p-4 m-auto gap-4 justify-center items-center h-full w-[90%]">
+    <div class="p-4 justify-center items-center">
       <div class="p-8 rounded-3xl flex flex-col gap-16 shadow-md h-full bg-white border border-blue">
         <div class="flex flex-row justify-around">
           <button @click="showChart('line')">Line Chart</button>
@@ -7,10 +7,10 @@
           <button @click="showChart('pie')">Pie Chart</button>
           <button @click="showChart('radar')">Radar Chart</button>
         </div>
-        <div v-if="selectedChart === 'line'">
+        <div v-if="selectedChart === 'line'" class="w-[50%] ">
           <Line :dataset="user_working_times" :date="date"/>
         </div>
-        <div v-else-if="selectedChart === 'bar'">
+        <div v-else-if="selectedChart === 'bar'" class="w-[50%] ">
           <Bar :dataset="user_working_times" :date="date"/>
         </div>
         <div v-else-if="selectedChart === 'pie'" class="w-[50%] m-auto">
