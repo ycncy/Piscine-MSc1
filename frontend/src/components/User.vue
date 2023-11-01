@@ -1,29 +1,29 @@
 <template>
-  <div class="bg-[#242424] h-16 text-white flex flex-row p-6 justify-between items-center">
+  <div class="bg-[#242424] h-16 flex flex-row p-6 justify-between items-center">
     <h1 class="text-xl">Time Manager</h1>
     <div>
       <div id="createUser">
-        <PopupForm class="text-white" v-if="popupTriggers.trigger_create"
+        <PopupForm v-if="popupTriggers.trigger_create"
                    :togglePopup="() => togglePopup('trigger_create')">
-          <form class="text-white flex flex-col gap-6" @submit.prevent="createUser" action="/">
-            <h1 class="text-2xl text-center">Create user</h1>
-            <p v-if="this.error" class="text-red-500">{{ this.error }}</p>
-            <div class="flex flex-col gap-2">
+          <form @submit.prevent="createUser" class="space-y-5">
+            <h1 class="text-2xl">Create user</h1>
+            <div>
               <label>Username</label>
-              <input type="text" class="bg-gray-200 rounded-lg p-2 focus:outline-blue-500"
-                     @change="() => this.error = undefined" name="username"
-                     v-model="user_form_info.username" placeholder="Username" required>
+              <input type="text" required v-model="user_form_info.username"
+                     placeholder="Username"
+                     class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+              />
             </div>
-            <div class="flex flex-col gap-2">
+            <div>
               <label>E-mail</label>
-              <input class="bg-gray-200 rounded-lg p-2 focus:outline-blue-500" type="email"
+              <input class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" type="email"
                      @change="() => this.error = undefined"
                      pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}" placeholder="E-mail address" name="email"
                      v-model="user_form_info.email" required>
             </div>
             <div class="flex flex-col gap-2">
               <label>Role</label>
-              <select class="bg-gray-200 rounded-lg p-2 focus:outline-blue-500" v-model="user_form_info.role"
+              <select class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" v-model="user_form_info.role"
                       name="role" required>
                 <option selected disabled>Select role</option>
                 <option value="employee">Employee</option>
@@ -31,40 +31,65 @@
                 <option value="general_manager">General Manager</option>
               </select>
             </div>
-            <button type="submit" class="rounded-lg text-white p-2 bg-blue-500">Create user</button>
+            <button
+                type="submit"
+                class="w-full px-4 py-2 text-white font-medium bg-[#161717] hover:bg-gray-600 active:bg-indigo-600 rounded-lg duration-150">
+              Create
+            </button>
           </form>
         </PopupForm>
       </div>
-      <div id="updateUser" class="text-white">
-        <PopupForm v-if="popupTriggers.trigger_update" :togglePopup="() => togglePopup('trigger_update')">
-          <h1 class="text-2xl text-center text-white">Update user</h1>
-          <h1 class="text-2xl text-center text-white">{{ this.current_user.username }}</h1>
-          <form class="text-white flex flex-col gap-6" @submit.prevent="updateUser" action="/">
-            <p v-if="this.error">{{ this.error }}</p>
-            <div class="flex flex-col gap-2">
+      <div id="updateUser">
+        <PopupForm v-if="popupTriggers.trigger_update"
+                   :togglePopup="() => togglePopup('trigger_update')">
+          <form @submit.prevent="updateUser" class="space-y-5">
+            <h1 class="text-2xl">Update user : {{ current_user.username }}</h1>
+            <div>
               <label>Username</label>
-              <input class="bg-gray-200 rounded-lg p-2 focus:outline-blue-500" type="text"
-                     @change="() => this.error = undefined" name="username"
-                     v-model="user_form_info.username" placeholder="Username" required>
+              <input type="text" required v-model="user_form_info.username"
+                     :placeholder="current_user.username"
+                     class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+              />
             </div>
-            <div class="flex flex-col gap-2">
+            <div>
               <label>E-mail</label>
-              <input class="bg-gray-200 rounded-lg p-2 focus:outline-blue-500" type="email"
+              <input class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" type="email"
                      @change="() => this.error = undefined"
-                     pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}" placeholder="E-mail address" name="email"
+                     pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}"
+                     :placeholder="current_user.email" name="email"
                      v-model="user_form_info.email" required>
             </div>
             <div class="flex flex-col gap-2">
               <label>Role</label>
-              <select class="bg-gray-200 rounded-lg p-2 focus:outline-blue-500" v-model="user_form_info.role"
-                      name="role" required>
-                <option selected disabled>Select role</option>
+              <select
+                  class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+                  v-model="user_form_info.role"
+                  name="role" required
+              >
+                <option value="" disabled selected>Select role</option>
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
                 <option value="general_manager">General Manager</option>
               </select>
             </div>
-            <button type="submit" class="rounded-lg text-white p-2 bg-blue-500">Update user</button>
+            <button
+                type="submit"
+                class="w-full px-4 py-2 text-white font-medium bg-[#161717] hover:bg-gray-600 active:bg-indigo-600 rounded-lg duration-150">
+              Create
+            </button>
+          </form>
+        </PopupForm>
+      </div>
+      <div id="deleteUser">
+        <PopupForm v-if="popupTriggers.trigger_delete" :togglePopup="() => togglePopup('trigger_delete')">
+          <form @submit.prevent="deleteUser" action="/">
+            <h1 class="text-xl text-[#161717]">Are you sure to delete user : {{ this.current_user.username }} ?</h1>
+            <div class="items-center gap-2 mt-3 text-sm sm:flex">
+              <button
+                  class="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md ring-offset-2 ring-red-600 focus:ring-2">
+                Delete
+              </button>
+            </div>
           </form>
         </PopupForm>
       </div>
@@ -93,7 +118,7 @@
       <div class="flex flex-row w-1/4 justify-evenly items-center">
         <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_create')" type="button"><span class="material-symbols-outlined"> person_add </span></button>
         <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_update')" type="button"><span class="material-symbols-outlined"> manage_accounts </span></button>
-        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="deleteUser" type="button"><span class="material-symbols-outlined">person_remove</span></button>
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_delete')" type="button"><span class="material-symbols-outlined">person_remove</span></button>
       </div>
       <label for="toggleB" class="flex items-center cursor-pointer">
       </label>
@@ -123,7 +148,8 @@ export default {
   setup() {
     const popupTriggers = ref({
       trigger_create: false,
-      trigger_update: false
+      trigger_update: false,
+      trigger_delete: false
     });
     const togglePopup = (trigger) => {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
@@ -138,7 +164,6 @@ export default {
   methods: {
     async redirectTo() {
       this.$router.push({name: "WorkingTimes", params: {userID: this.selected_user.id}});
-
       this.current_user = this.selected_user;
     },
     setSelectedUser(user) {
@@ -156,6 +181,7 @@ export default {
       switch (response.status_code) {
         case 201:
           this.togglePopup('trigger_create');
+          window.location.reload()
           break;
         case 422:
           this.error = "Non-valid email format";
@@ -176,9 +202,22 @@ export default {
       switch (response.status_code) {
         case 200:
           this.togglePopup('trigger_update');
+          window.location.reload()
           break;
         case 403:
           this.error = "User already exists";
+      }
+    },
+    async deleteUser() {
+      const response = await users_service.delete_user(
+          this.current_user.id,
+      );
+
+      switch (response.status_code) {
+        case 204:
+          this.togglePopup('trigger_delete');
+          window.location.reload()
+          break;
       }
     },
     searchUsers() {
