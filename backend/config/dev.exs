@@ -2,13 +2,14 @@ import Config
 
 # Configure your database
 config :backend, Backend.Repo,
- username: "postgres",
-  password: "pass123",
-  hostname: "localhost",
-  database: "timemanager",
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+       username: System.get_env("PGUSER"),
+       password: System.get_env("PGPASSWORD"),
+       hostname: System.get_env("PGHOST"),
+       database: System.get_env("PGDATABASE"),
+       port: System.get_env("PGPORT"),
+       stacktrace: true,
+       show_sensitive_data_on_connection_error: true,
+       pool_size: 10
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -17,17 +18,17 @@ config :backend, Backend.Repo,
 # watchers to your application. For example, we can use i
 # to bundle .js and .css sources.
 config :backend, BackendWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
-  check_origin: false,
-  code_reloader: true,
-  debug_errors: false,
-  secret_key_base: "5YYh6+D5y9EZcNKRzXnklVLj1cpH5fMgKOzQarWqzyINszAwBLIbCRhUj1aX9f+9",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
-  ]
+       # Binding to loopback ipv4 address prevents access from other machines.
+       # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+       http: [ip: {0, 0, 0, 0}, port: 4000],
+       check_origin: false,
+       code_reloader: true,
+       debug_errors: false,
+       secret_key_base: "5YYh6+D5y9EZcNKRzXnklVLj1cpH5fMgKOzQarWqzyINszAwBLIbCRhUj1aX9f+9",
+       watchers: [
+         esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+         tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+       ]
 
 # ## SSL Support
 #
@@ -54,13 +55,13 @@ config :backend, BackendWeb.Endpoint,
 
 # Watch static and templates for browser reloading.
 config :backend, BackendWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/backend_web/(controllers|live|components)/.*(ex|heex)$"
-    ]
-  ]
+       live_reload: [
+         patterns: [
+           ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+           ~r"priv/gettext/.*(po)$",
+           ~r"lib/backend_web/(controllers|live|components)/.*(ex|heex)$"
+         ]
+       ]
 
 # Enable dev routes for dashboard and mailbox
 config :backend, dev_routes: true
