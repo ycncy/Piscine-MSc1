@@ -116,7 +116,9 @@ defmodule BackendWeb.WorkingTimeController do
 
         case working_time do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+            conn
+              |> put_resp_content_type("application/json")  # Set the Content-Type to JSON
+              |> send_resp(404, Poison.encode!(%{"errors" => "Not found"}))
           _ ->
             with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
               send_resp(conn, :no_content, "")
