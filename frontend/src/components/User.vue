@@ -102,10 +102,11 @@
               v-model="searchQuery"
               @input="searchUsers"
               placeholder="Search user"
+              @focusin="visibleResults = true"
               class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent appearance-none dark:text-gray-400 dark:border-gray-500 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
           />
 
-          <ul class="text-gray-400 flex flex-col rounded text-sm absolute top-14 bg-[#161717] border-gray-600" v-if="visibleResults && searchResults.length > 0">
+          <ul v-if="visibleResults && this.users.length > 0" class="text-gray-400 flex flex-col rounded text-sm absolute top-14 bg-[#161717] border-gray-600">
               <button class="p-2 hover:bg-zinc-50 hover:text-zinc-900 text-start" v-for="(result, index) in searchResults" :key="index" @click="setSelectedUser(result)">{{ result.username }}</button>
           </ul>
         </div>
@@ -142,7 +143,7 @@ export default {
       error: undefined,
       searchQuery: "",
       searchResults: [],
-      visibleResults: false
+      visibleResults: false,
     }
   },
   setup() {
@@ -163,7 +164,11 @@ export default {
   components: {PopupForm},
   methods: {
     async redirectTo() {
-      this.$router.push({name: "WorkingTimes", params: {userID: this.selected_user.id}});
+      if (this.$route.fullPath === "/dashboard") {
+        this.$router.push({name: "WorkingTimes", params: {userID: this.selected_user.id}});
+      } else {
+        this.$router.replace({params: {userID: this.selected_user.id}})
+      }
       this.current_user = this.selected_user;
     },
     setSelectedUser(user) {
@@ -231,8 +236,15 @@ export default {
 
       this.selected_user = {};
     },
+    handleClickOutside(event) {
+      if (this.$el && !this.$el.contains(event.target)) {
+        this.visibleResults = false;
+      }
+    },
   },
   async mounted() {
+    document.addEventListener('click', this.handleClickOutside);
+
     const user_id = this.$route.params.userID;
 
     await users_service.get_user_by_id(

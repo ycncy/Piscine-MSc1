@@ -1,5 +1,6 @@
 <template>
-    <div class="bg-[#161717] min-h-screen py-4 w-16 flex flex-col items-center gap-24">
+    <div class="bg-[#161717] min-h-screen w-16 flex flex-col items-center gap-24">
+      <img src="../assets/logo.png" class="invert" alt="logo"/>
       <ul class="flex flex-col justify-around gap-12">
         <li>
           <router-link class="flex gap-6 items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" :to="'/dashboard/workingtimes/' + this.$route.params.userID">

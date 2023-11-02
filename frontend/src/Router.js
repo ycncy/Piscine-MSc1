@@ -1,36 +1,52 @@
 import {createRouter, createWebHistory} from "vue-router";
-import WorkingTimeManager from "@/components/WorkingTimeManager/WorkingTimeManager.vue";
 import Chart from "@/components/ChartManager/Chart.vue";
 import Clocks from "@/components/Clocks.vue";
-import User from "@/components/User.vue";
 import UserLayout from "@/components/UserLayout.vue";
+import WorkingTimeEditor from "@/components/WorkingTimes.vue";
+import NotFound from "@/components/Errors/NotFound.vue";
+import DashboardHome from "@/components/DashboardHome.vue";
 
 const routes = [
     {
-        path: '/dashboard',
+        path: "",
         component: UserLayout,
+        redirect: "/dashboard",
         children: [
             {
-                path: '',
-                component: User,
+                path: ':pathMatch(.*)*',
+                component: NotFound
             },
             {
-                path: 'workingTimes/:userID',
-                component: WorkingTimeManager,
-                name: "WorkingTimes",
+                path: '/dashboard',
+                children: [
+                    {
+                        path: "",
+                        component: DashboardHome
+                    },
+                    {
+                        path: ':userID',
+                        component: DashboardHome,
+                        name: "Home"
+                    },
+                    {
+                        path: 'workingTimes/:userID',
+                        component: WorkingTimeEditor,
+                        name: "WorkingTimes",
+                    },
+                    {
+                        path: 'clockManager/:userID',
+                        component: Clocks,
+                        name: "ClockManager",
+                    },
+                    {
+                        path: 'chartManager/:userID',
+                        component: Chart,
+                        name: "ChartManager",
+                    },
+                ],
             },
-            {
-                path: 'clockManager/:userID',
-                component: Clocks,
-                name: "ClockManager",
-            },
-            {
-                path: 'chartManager/:userID',
-                component: Chart,
-                name: "ChartManager",
-            },
-        ],
-    },
+        ]
+    }
 ];
 
 const Router = createRouter({

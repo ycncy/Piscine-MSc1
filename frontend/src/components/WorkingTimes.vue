@@ -1,16 +1,13 @@
 <template>
-  <div class="p-4 gap-3 col-md-12 flex flex-col">
-    <p class="text-center align-middle text-4xl" v-if="this.working_times.length === 0">
-      No working times found for this user
-    </p>
-    <div v-else class="w-3/4 mx-auto px-4 md:px-8">
+  <div class="p-4 gap-3 flex flex-col">
+    <div class="w-3/4 mx-auto px-4">
       <div class="items-start justify-between md:flex">
-        <div class="max-w-lg">
-          <h3 class="text-white text-xl font-bold sm:text-2xl">
+        <div>
+          <h3 class="text-white font-bold text-2xl">
             Working Times
           </h3>
         </div>
-        <div class="mt-3 md:mt-0">
+        <div>
           <button @click="togglePopup('trigger_create')"
                   class="inline-block px-4 py-2 text-white duration-150 font-medium bg-[#161717] rounded-lg hover:bg-gray-400 md:text-sm">
             New Working Time
@@ -18,7 +15,7 @@
         </div>
       </div>
       <div class="mt-12 shadow-sm border rounded-lg overflow-x-auto">
-        <table class="w-full table-auto text-sm text-left">
+        <table class="w-full text-sm text-left">
           <thead class="bg-gray-50 text-gray-600 uppercase font-medium border-b">
           <tr>
             <th class="py-3 px-6">Username</th>
@@ -29,26 +26,29 @@
           </tr>
           </thead>
           <tbody class="bg-white text-gray-500 divide-y">
-          <tr v-for="(working_time, index) in working_times" :key="index">
-            <td class="px-6 py-4 whitespace-nowrap">{{ current_user["username"] }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.start_time) }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.end_time) }}</td>
-            <td :class="['px-6 py-4 whitespace-nowrap', 'w-1/12', working_time.status ? 'text-green-600' : 'text-red-600']">
-              {{ working_time.status ? 'Active' : 'Inactive' }}
-            </td>
-            <td class="text-left px-6 whitespace-nowrap w-1/12 space-x-4">
-              <button class="text-yellow-600" @click="toggleEditWorkingTime(working_time)">
-                <span class="material-symbols-outlined">
-                  edit
-                </span>
-              </button>
-              <button class="text-red-600" @click="toggleDeleteWorkingTime(working_time)">
-                <span class="material-symbols-outlined">
-                  delete
-                </span>
-              </button>
-            </td>
-          </tr>
+            <tr v-if="this.working_times.length > 0" v-for="(working_time, index) in working_times" :key="index">
+              <td class="px-6 py-4 whitespace-nowrap">{{ current_user["username"] }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.start_time) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.end_time) }}</td>
+              <td :class="['px-6 py-4 whitespace-nowrap', 'w-1/12', working_time.status ? 'text-green-600' : 'text-red-600']">
+                {{ working_time.status ? 'Active' : 'Inactive' }}
+              </td>
+              <td class="text-left px-6 whitespace-nowrap w-1/12 space-x-4">
+                <button class="text-yellow-600" @click="toggleEditWorkingTime(working_time)">
+                  <span class="material-symbols-outlined">
+                    edit
+                  </span>
+                </button>
+                <button class="text-red-600" @click="toggleDeleteWorkingTime(working_time)">
+                  <span class="material-symbols-outlined">
+                    delete
+                  </span>
+                </button>
+              </td>
+            </tr>
+            <tr v-else>
+              <td class="px-6 py-4 whitespace-nowrap text-center" :colspan="5">No working times found for this user</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -113,7 +113,7 @@
     </div>
     <div id="deleteWorkingTime">
       <PopupForm v-if="popupTriggers.trigger_delete" :togglePopup="() => togglePopup('trigger_delete')">
-        <form @submit.prevent="deleteWorkingTime" action="/">
+        <form @submit.prevent="deleteWorkingTime" action="/frontend/public">
           <h1 class="text-xl text-[#161717]">Are you sure to delete this Working Time ?</h1>
           <div class="items-center gap-2 mt-3 text-sm sm:flex">
             <button
@@ -129,26 +129,24 @@
 
 <script>
 import User from "@/App.vue";
-import {list} from "postcss";
 import PopupForm from "@/components/PopupForm.vue";
 import {ref} from "vue";
 import {working_time_service} from "@/services/workingtimes.service"
 import moment from "moment";
+import {users_service} from "@/services/users.service";
 
 export default {
-  name: "WorkingTimeEditor",
+  name: "WorkingTimes",
   components: {PopupForm, User},
   data() {
     return {
+      working_times: [],
+      current_user: undefined,
+      editor_mode_boolean: false,
       working_time_info: {
         status: false
       },
     }
-  },
-  props: {
-    current_user: Object,
-    working_times: list,
-    error: "",
   },
   setup() {
     const popupTriggers = ref({
@@ -228,8 +226,17 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
+    await users_service.get_user_by_id(this.$route.params.userID).then((response) => {
+      this.current_user = response.data
+    });
+
     console.log(this.current_user)
+
+    await working_time_service.get_working_times_by_id(this.$route.params.userID)
+        .then((result) => {
+          this.working_times = result.data;
+        });
   }
 };
 </script>

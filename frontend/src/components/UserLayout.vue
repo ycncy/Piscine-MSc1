@@ -3,7 +3,7 @@
     <Navbar/>
     <div class="flex flex-col w-full min-h-screen">
       <User/>
-      <router-view class="min-h-screen w-full" :key="$route.path"></router-view>
+      <router-view class="w-full" :key="$route.path"></router-view>
     </div>
   </div>
 </template>
