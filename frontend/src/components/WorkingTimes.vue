@@ -124,27 +124,65 @@
         </form>
       </PopupForm>
     </div>
+    <FullCalendar :options="calendarOptions" ref="fullCalendar" />
+
   </div>
 </template>
 
 <script>
 import User from "@/App.vue";
 import PopupForm from "@/components/PopupForm.vue";
-import {ref} from "vue";
 import {working_time_service} from "@/services/workingtimes.service"
+// import {get_working_times_by_id} from "@/services/workingtimes.service"
 import moment from "moment";
 import {users_service} from "@/services/users.service";
+import FullCalendar from '@fullcalendar/vue3'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list'
+import { reactive, ref } from "vue"
+
+const id = ref(10)
 
 export default {
   name: "WorkingTimes",
-  components: {PopupForm, User},
+  components: {PopupForm, User, FullCalendar},
   data() {
     return {
       working_times: [],
       current_user: undefined,
       editor_mode_boolean: false,
       working_time_info: {
-        status: false
+      status: false
+      },
+      calendarOptions: {
+         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        editable: true,
+        selectable: true,
+        weekends: true,
+        select: (arg)=>{
+          id.value = id.value + 1
+
+          // const cal = arg.view.calendar
+          // cal.unselect()
+          // cal.addEvent({
+          //   id : `${id.value}`,
+          //   title: `New Event ${id.value}`,
+          //   start: arg.start,
+          //   end: arg.end,
+          //   allDay: true
+          //   })
+      },
+      eventClick: (arg) => {
+        console.log(arg.event.title)
+        }
       },
     }
   },
@@ -154,6 +192,7 @@ export default {
       trigger_delete: false,
       trigger_create: false
     });
+    
     const togglePopup = (trigger) => {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
     }
@@ -164,6 +203,28 @@ export default {
     }
   },
   methods: {
+    getWorkingtimes: function () {
+      users_service.get_user_by_id(this.$route.params.userID).then((response) => {
+        this.current_user = response.data
+      })
+
+      working_time_service.get_working_times_by_id(this.$route.params.userID).then((result) => {
+        this.workingtimes = result.data;
+
+        for (const workingTime of this.workingtimes) {
+        this.$refs.fullCalendar.getApi().addEvent({
+          id: workingTime.id, 
+          title: 'Working Time', 
+          start: workingTime.start_time, 
+          end: workingTime.end_time, 
+          allDay: false, 
+        });
+       }
+      });
+
+    },
+
+
     formatDateTime(dateTime) {
       return moment(new Date(dateTime)).format('MMMM Do YYYY, h:mm');
     },
@@ -231,12 +292,15 @@ export default {
       this.current_user = response.data
     });
 
-    console.log(this.current_user)
+    // console.log(this.current_user)
 
     await working_time_service.get_working_times_by_id(this.$route.params.userID)
         .then((result) => {
           this.working_times = result.data;
         });
-  }
+  },
+  created() {
+    this.getWorkingtimes();
+  },
 };
 </script>
