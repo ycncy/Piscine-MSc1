@@ -17,14 +17,23 @@ defmodule BackendWeb.UserController do
     case Integer.parse(user_id) do
       {user_id_int, _} ->
         IO.inspect(Repo.get(User, user_id_int))
-        case Repo.get(User, user_id_int) do
-          nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
-          user ->
-            render(conn, :show, user: user)
+        if user_id_int != nil do
+
+          case Repo.get(User, user_id_int) do
+            nil ->
+              conn
+              |> put_resp_content_type("application/json")  # Set the Content-Type to JSON
+              |> send_resp(404, Poison.encode!(%{"errors" => "Not found"}))
+            user ->
+              render(conn, :show, user: user)
+          end
+        else
+          send_resp(conn, 400, Poison.encode!(%{error: "Bad arguments", message: "Argument id unspecified"}))
+
         end
+
       :error ->
-        send_resp(conn, 400, %{error: "InvalidUserID", message: "Invalid user ID format"})
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
@@ -32,28 +41,40 @@ defmodule BackendWeb.UserController do
     user_params = conn.query_params
     username = Map.get(user_params, "username")
     email = Map.get(user_params, "email")
+    if(username==nil || email == nil)do
+      send_resp(conn,400,Poison.encode!(%{error: "Bad arguments", message: "Argument email or username unspecified"}))
+    else
 
-    case Repo.get_by(User, username: username, email: email) do
-      nil ->
-        send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No user found for credentials"}))
-      user ->
-        render(conn, :show, user: user)
+      case Repo.get_by(User, username: username, email: email) do
+        nil ->
+          send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No user found for credentials"}))
+        user ->
+          render(conn, :show, user: user)
+      end
     end
   end
 
   def create_user(conn, %{"user" => user_params}) do
-    case Users.create_user(user_params) do
-      {:ok, %User{} = user} ->
-        conn
-        |> put_status(:created)
-        |> render(:show, user: user)
+    username = Map.get(user_params,"username");
+    email = Map.get(user_params,"email")
+    role = Map.get(user_params,"role")
+    if (username == "" || email == "" || (role != "employee" && role != "manager" && role != "general_manager") ) do
+      conn
+      |> put_resp_content_type("application/json")  # Set the Content-Type to JSON
+      |> send_resp(422, Poison.encode!(%{"errors" => "invalid data"}))
 
-      {:error, %Ecto.ConstraintError{message: error_message}} ->
-        conn
-        |> put_status(:forbidden)
-        |> render(:error, %{error: "ConstraintError", message: error_message})
-      _ ->
-        send_resp(conn, 500, "Internal Server Error")
+    else
+      case Users.create_user(user_params) do
+        {:ok, %User{} = user} ->
+          conn
+          |> put_status(:created)
+          |> render(:show, user: user)
+
+        {:error, %Ecto.ConstraintError{message: error_message}} ->
+          conn
+          |> put_status(:forbidden)
+          |> render(:error, %{error: "ConstraintError", message: error_message})
+      end
     end
   end
 
@@ -77,7 +98,10 @@ defmodule BackendWeb.UserController do
         send_resp(conn, :no_content, "")
       end
     rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "User #{user_id} not found"}))
+      Ecto.NoResultsError ->
+        conn
+      |> put_status(:not_found) # Set the Content-Type to JSON
+      |> send_resp(404, Poison.encode!(%{"errors" => "Not found"}))
     end
   end
 end

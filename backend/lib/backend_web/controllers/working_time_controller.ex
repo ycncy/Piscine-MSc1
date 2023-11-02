@@ -63,7 +63,6 @@ defmodule BackendWeb.WorkingTimeController do
       :error ->
         send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
-    {user_id, ""} = Integer.parse(user_id)
   end
 
   def get_one_working_time(conn, %{"userID" => user_id, "id" => id}) do
@@ -101,8 +100,8 @@ defmodule BackendWeb.WorkingTimeController do
           nil ->
             send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
           _ ->
-            with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
-              send_resp(conn, :no_content, "")
+            with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
+              render(conn, :show, working_time: working_time)
             end
         end
       :error ->
@@ -117,7 +116,9 @@ defmodule BackendWeb.WorkingTimeController do
 
         case working_time do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
+            conn
+              |> put_resp_content_type("application/json")  # Set the Content-Type to JSON
+              |> send_resp(404, Poison.encode!(%{"errors" => "Not found"}))
           _ ->
             with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
               send_resp(conn, :no_content, "")

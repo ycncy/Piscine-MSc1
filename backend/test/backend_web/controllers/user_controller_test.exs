@@ -7,23 +7,18 @@ defmodule BackendWeb.UserControllerTest do
 
   @create_attrs %{
     username: "some username",
-    email: "some email"
+    email: "some@mail.com",
+    role: "employee"
   }
   @update_attrs %{
-    username: "some updated username",
-    email: "some updated email"
+    username: "someupdatedusername",
+    email: "someupdated@mail.com",
+    role: "manager"
   }
   @invalid_attrs %{username: nil, email: nil}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  end
-
-  describe "index" do
-    test "lists all users", %{conn: conn} do
-      conn = get(conn, ~p"/api/users")
-      assert json_response(conn, 200)["data"] == []
-    end
   end
 
   describe "create user" do
@@ -35,8 +30,9 @@ defmodule BackendWeb.UserControllerTest do
 
       assert %{
                "id" => ^id,
-               "email" => "some email",
-               "username" => "some username"
+               "email" => "some@mail.com",
+               "username" => "some username",
+               "role" => "employee"
              } = json_response(conn, 200)["data"]
     end
 
@@ -57,8 +53,8 @@ defmodule BackendWeb.UserControllerTest do
 
       assert %{
                "id" => ^id,
-               "email" => "some updated email",
-               "username" => "some updated username"
+               "email" => "someupdated@mail.com",
+               "username" => "someupdatedusername"
              } = json_response(conn, 200)["data"]
     end
 
@@ -71,13 +67,15 @@ defmodule BackendWeb.UserControllerTest do
   describe "delete user" do
     setup [:create_user]
 
-    test "deletes chosen user", %{conn: conn, user: user} do
-      conn = delete(conn, ~p"/api/users/#{user}")
+    test "deletes chosen user", %{conn: conn, user: %User{id: id} = user} do
+      conn = delete(conn, ~p"/api/users/#{id}")
       assert response(conn, 204)
-
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/api/users/#{user}")
-      end
+      conn = get(conn, ~p"/api/users/#{id}")
+      assert json_response(conn, 404)["errors"] != %{}
+    end
+    test "deletes invalid user", %{conn: conn, user: %User{id: id} = user} do
+      conn = delete(conn, ~p"/api/users/#{id+1}")
+      assert response(conn, 404)
     end
   end
 
