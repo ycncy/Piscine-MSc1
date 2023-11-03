@@ -124,7 +124,29 @@
         </form>
       </PopupForm>
     </div>
-    <FullCalendar :options="calendarOptions" ref="fullCalendar" />
+    <div id="displayWorkingTime">
+  <PopupForm v-if="popupTriggers.trigger_display" :togglePopup="() => togglePopup('trigger_display')" >
+    <form @submit.prevent="updateWorkingTime" action="/frontend/public">
+      <h1 class="text-2xl">Update Working Time</h1>
+      <div>
+        <label class="font-medium">Start time</label>
+        <input type="text" v-model="working_time_info.start_time" class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" />
+      </div>
+      <div>
+        <label class="font-medium">End time</label>
+        <input type="text" v-model="working_time_info.end_time" class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" />
+      </div>
+      <button type="submit" class="w-full px-4 py-2 text-white font-medium bg-[#161717] hover:bg-gray-600 active:bg-indigo-600 rounded-lg duration-150">
+        Update
+      </button>
+    </form>
+    <button @click="deleteWorkingTime" class="mt-4 px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg duration-150">
+      Delete
+    </button>
+  </PopupForm>
+</div>
+
+    <FullCalendar :options="calendarOptions" ref="fullCalendar"   />
 
   </div>
 </template>
@@ -133,7 +155,6 @@
 import User from "@/App.vue";
 import PopupForm from "@/components/PopupForm.vue";
 import {working_time_service} from "@/services/workingtimes.service"
-// import {get_working_times_by_id} from "@/services/workingtimes.service"
 import moment from "moment";
 import {users_service} from "@/services/users.service";
 import FullCalendar from '@fullcalendar/vue3'
@@ -156,8 +177,10 @@ export default {
       working_time_info: {
       status: false
       },
+      selectedWorkingTime: null,
+
       calendarOptions: {
-         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+        plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
         headerToolbar: {
           left: 'prev,next today',
@@ -180,9 +203,13 @@ export default {
           //   allDay: true
           //   })
       },
+      //update
       eventClick: (arg) => {
-        console.log(arg.event.title)
-        }
+        this.selectedWorkingTime = arg.event.extendedProps;
+        this.getWorkingTimesById(this.selectedWorkingTime.id);
+    }
+
+
       },
     }
   },
@@ -190,7 +217,8 @@ export default {
     const popupTriggers = ref({
       trigger_update: false,
       trigger_delete: false,
-      trigger_create: false
+      trigger_create: false,
+      trigger_display: false
     });
     
     const togglePopup = (trigger) => {
@@ -236,6 +264,14 @@ export default {
       this.working_time_info = Object.assign({}, working_time);
       this.togglePopup('trigger_delete');
     },
+    toggleDisplayWorkingTime(working_time) {
+      this.working_time_info.id = working_time.id;
+      this.working_time_info.start_time = working_time.start_time;
+      this.working_time_info.end_time = working_time.end_time;
+      this.working_time_info.status = working_time.status;
+      this.togglePopup('trigger_display');
+},
+
     async updateWorkingTime() {
       const response = await working_time_service.update_working_time(
           this.working_time_info.id,
@@ -285,7 +321,22 @@ export default {
         case 403:
           this.error = "Working_time already exists";
       }
+    },
+    async getWorkingTimesById(){
+      const response = await working_time_service.get_working_times_by_id(
+          this.current_user.id
+      );
+      switch (response.status_code) {
+        case 200:
+          this.togglePopup('trigger_display');
+          window.location.reload()
+          break;
+        case 403:
+          this.error = "working time does not exist";
+      }
     }
+
+
   },
   async mounted() {
     await users_service.get_user_by_id(this.$route.params.userID).then((response) => {
@@ -303,4 +354,5 @@ export default {
     this.getWorkingtimes();
   },
 };
+
 </script>
