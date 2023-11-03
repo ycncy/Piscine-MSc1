@@ -141,7 +141,7 @@
         Update
       </button>
     </form>
-    <button @click="deleteWorkingTime" class="mt-4 px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg duration-150">
+    <button @click="confirmDelete" class="mt-4 px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg duration-150">
       Delete
     </button>
   </PopupForm>
@@ -298,18 +298,18 @@ export default {
       const response = await working_time_service.delete_working_time(
           this.working_time_info.id
       );
-
-      console.log(response)
-
       switch (response.status_code) {
         case 204:
           this.togglePopup('trigger_delete');
           window.location.reload()
           break;
         case 403:
-          this.error = "Working_time already exists";
+          this.error = "l";
       }
-    },
+    },async confirmDelete(){
+      this.togglePopup('trigger_delete');
+      this.togglePopup('trigger_display')
+    },  
     async createWorkingTime() {
       const response = await working_time_service.create_working_time(
           this.current_user.id,
