@@ -53,6 +53,8 @@ defmodule Backend.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:poison, "~>3.1"},
       {:cors_plug, "~> 3.0"},
+      {:joken, "~> 2.6.0"},
+      {:comeonin, "~> 2.5"}
     ]
   end
 

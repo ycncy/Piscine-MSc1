@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :backend, :joken_secret_key, "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6Ik1vaSIsImV4cCI6MTY5OTAwNTU3OCwiaWF0IjoxNjk5MDA1NTc4fQ.pg2iRMTW7mEF0dlaEERph26qIFvfUCW9mz98H3P3GIQ"
+
 config :backend,
   ecto_repos: [Backend.Repo],
   generators: [timestamp_type: :utc_datetime]

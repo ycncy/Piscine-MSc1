@@ -16,7 +16,6 @@ defmodule BackendWeb.UserController do
   def get_user_by_id(conn, %{"userID" => user_id}) do
     case Integer.parse(user_id) do
       {user_id_int, _} ->
-        IO.inspect(Repo.get(User, user_id_int))
         case Repo.get(User, user_id_int) do
           nil ->
             send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
