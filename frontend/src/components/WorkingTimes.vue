@@ -206,8 +206,14 @@ export default {
       },
       //update
       eventClick: (arg) => {
-        this.selectedWorkingTime = arg.event.extendedProps;
-        this.getWorkingTimesById(this.selectedWorkingTime.id);
+        this.selectedWorkingTime = {
+          id: arg.event.id,
+          start_time: moment(new Date(arg.event.start)).format('YYYY-MM-DDTHH:mm:ss') ,
+          end_time: moment(new Date(arg.event.end)).format('YYYY-MM-DDTHH:mm:ss'),
+          
+        }
+        this.toggleDisplayWorkingTime(this.selectedWorkingTime);
+        console.log(arg.event.end)
     }
 
 
