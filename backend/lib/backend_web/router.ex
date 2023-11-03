@@ -23,7 +23,7 @@ defmodule BackendWeb.Router do
     pipe_through :api
 
     post "/login", SessionUserController, :login
-    post "/register", SessionUserController, :register
+    post "/logout", SessionUserController, :logout
   end
 
   scope "/api/users", BackendWeb do

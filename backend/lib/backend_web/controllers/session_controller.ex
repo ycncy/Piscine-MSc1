@@ -3,13 +3,42 @@ defmodule BackendWeb.SessionUserController do
 
   alias Comeonin.Bcrypt
   alias Backend.Users.User
+  alias Backend.Users
   alias Backend.Repo
   alias Joken
 
-  def login(conn, %{"username" => username, "password" => password}) do
-    case User.authenticate(username, password) do
+#  def login(conn, %{"username" => username, "password" => password}) do
+#    case User.authenticate(username, password) do
+#      {:ok, user} ->
+#        csrf_token = Plug.CSRFProtection.get_csrf_token()
+#
+#        jwt_payload = %{
+#          "user_id" => user.id,
+#          "role" => user.role,
+#          "csrf_token" => csrf_token,
+#          "exp" => DateTime.to_unix(DateTime.utc_now()) + 604800
+#        }
+#
+#        jwt_token = JWT.sign(jwt_payload, BackendWeb.Endpoint.config(:joken_secret_key))
+#
+#        conn
+#        |> put_resp_cookie("auth_token", jwt_token, http_only: true)
+#        |> json(%{message: "Login successful", user: user})
+#
+#      {:error, reason} ->
+#        conn
+#        |> put_status(401)
+#        |> json(%{error: "Authentication failed", reason: reason})
+#    end
+#  end
+
+  def login(conn, %{"user" => user_params}) do
+    email = Map.get(user_params, "email")
+    password = Map.get(user_params, "password")
+
+    case authenticate(email, password) do
       {:ok, user} ->
-        csrf_token = generate_csrf_token()
+        csrf_token = Plug.CSRFProtection.get_csrf_token()
 
         jwt_payload = %{
           "user_id" => user.id,
@@ -18,56 +47,57 @@ defmodule BackendWeb.SessionUserController do
           "exp" => DateTime.to_unix(DateTime.utc_now()) + 604800
         }
 
-        jwt_token = Joken.sign(jwt_payload, BackendWeb.Endpoint.config(:joken_secret_key))
+        jwt_token = JWT.sign(jwt_payload, %{key: BackendWeb.Endpoint.config(:joken_secret_key)})
 
         conn
         |> put_resp_cookie("auth_token", jwt_token, http_only: true)
-        |> json(%{message: "Login successful", user: user})
+        |> json(%{message: "Login successful", user: %{id: user.id, role: user.role}, csrf_token: csrf_token})
 
       {:error, reason} ->
         conn
-        |> put_status(401)
-        |> json(%{error: "Authentication failed", reason: reason})
+        |> put_status(400)
+        |> json(%{error: "Login failed", reason: reason})
     end
   end
 
-  def register(conn, %{"user" => user_params}) do
-    case Users.create_user(user_params) do
-      {:ok, %User{} = user} ->
-        csrf_token = generate_csrf_token()
-
-        jwt_payload = %{
-          "user_id" => user.id,
-          "role" => user.role,
-          "csrf_token" => csrf_token,
-          "exp" => DateTime.to_unix(DateTime.utc_now()) + 604800
-        }
-
-        jwt_token = Joken.sign(jwt_payload, BackendWeb.Endpoint.config(:joken_secret_key))
-
-        conn
-        |> put_resp_cookie("auth_token", jwt_token, http_only: true)
-        |> json(%{message: "Signup and login successful", user: user})
-
-      {:error, %Ecto.ConstraintError{message: error_message}} ->
-        conn
-        |> put_status(:forbidden)
-        |> render(:error, %{error: "ConstraintError", message: error_message})
+  def logout(conn, _params) do
+    csrf_token = Plug.Conn.get_req_header(conn, "csrf-token")
+    IO.inspect(Plug.Conn.get_req_header(conn, "csrf-token"))
+    case csrf_token do
       _ ->
-        send_resp(conn, 500, "Internal Server Error")
+
+        case Map.get(conn.req_cookies, "auth_token") do
+          auth_token ->
+            case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
+              claims ->
+                conn
+                |> delete_resp_cookie("auth_token")
+                |> put_status(200)
+                |> json(%{message: "Logout successful"})
+              {:error, reason} ->
+                conn
+                |> put_status(400)
+                |> json(%{error: "Bad request : jwt token not found"})
+            end
+          {:error, reason} ->
+            conn
+            |> put_status(400)
+            |> json(%{error: "Bad request : jwt token not found"})
+        end
+      [] ->
+        conn
+        |> put_status(400)
+        |> json(%{error: "Bad request : csrf header not found"})
+      {:error, reason} ->
+        conn
+        |> put_status(500)
+        |> json(%{error: "Logout failed", reason: reason})
     end
+
   end
 
-  defp generate_csrf_token() do
-    {:ok, csrf_bytes} = :crypto.strong_rand_bytes(32)
-
-    csrf_token = Base.encode16(csrf_bytes)
-
-    csrf_token
-  end
-
-  defp authenticate(username, password) do
-    case Repo.get_by(User, username: username) do
+  defp authenticate(email, password) do
+    case Repo.get_by(User, email: email) do
       nil ->
         {:error, "User not found"}
 
