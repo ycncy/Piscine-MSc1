@@ -83,7 +83,7 @@
       </PopupForm>
     </div>
     <div id="updateWorkingTime">
-      <PopupForm v-if="popupTriggers.trigger_update" :togglePopup="() => togglePopup('trigger_update')">
+      <PopupForm v-if="popupTriggers.trigger_update" :togglePopup="() => togglePopup('trigger_update')"> 
         <form @submit.prevent="updateWorkingTime" class="space-y-5">
           <h1 class="text-2xl">Update Working Time</h1>
           <div>
@@ -124,17 +124,18 @@
         </form>
       </PopupForm>
     </div>
+    <!-- display -->
     <div id="displayWorkingTime">
   <PopupForm v-if="popupTriggers.trigger_display" :togglePopup="() => togglePopup('trigger_display')" >
     <form @submit.prevent="updateWorkingTime" action="/frontend/public">
       <h1 class="text-2xl">Update Working Time</h1>
       <div>
         <label class="font-medium">Start time</label>
-        <input type="text" v-model="working_time_info.start_time" class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" />
+        <input type="text" v-model="working_time_info.start_time" :placeholder="working_time_info.start_time" class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" />
       </div>
       <div>
         <label class="font-medium">End time</label>
-        <input type="text" v-model="working_time_info.end_time" class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" />
+        <input type="text" v-model="working_time_info.end_time" :placeholder="working_time_info.end_time" class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"  />
       </div>
       <button type="submit" class="w-full px-4 py-2 text-white font-medium bg-[#161717] hover:bg-gray-600 active:bg-indigo-600 rounded-lg duration-150">
         Update
@@ -146,7 +147,7 @@
   </PopupForm>
 </div>
 
-    <FullCalendar :options="calendarOptions" ref="fullCalendar"   />
+    <FullCalendar :options="calendarOptions" ref="fullCalendar"/>
 
   </div>
 </template>
@@ -264,11 +265,9 @@ export default {
       this.working_time_info = Object.assign({}, working_time);
       this.togglePopup('trigger_delete');
     },
+    //display
     toggleDisplayWorkingTime(working_time) {
-      this.working_time_info.id = working_time.id;
-      this.working_time_info.start_time = working_time.start_time;
-      this.working_time_info.end_time = working_time.end_time;
-      this.working_time_info.status = working_time.status;
+      this.working_time_info = Object.assign({}, working_time);
       this.togglePopup('trigger_display');
 },
 
@@ -329,7 +328,6 @@ export default {
       switch (response.status_code) {
         case 200:
           this.togglePopup('trigger_display');
-          window.location.reload()
           break;
         case 403:
           this.error = "working time does not exist";
