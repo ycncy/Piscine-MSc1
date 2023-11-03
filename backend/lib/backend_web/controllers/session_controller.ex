@@ -31,9 +31,9 @@ defmodule BackendWeb.SessionUserController do
     end
   end
 
-  def register(conn, %{"username" => username, "email" => email, "password" => password, "role" => role}) do
-    case create_user(username, email, password, role) do
-      {:ok, user} ->
+  def register(conn, %{"user" => user_params}) do
+    case Users.create_user(user_params) do
+      {:ok, %User{} = user} ->
         csrf_token = generate_csrf_token()
 
         jwt_payload = %{
@@ -49,26 +49,12 @@ defmodule BackendWeb.SessionUserController do
         |> put_resp_cookie("auth_token", jwt_token, http_only: true)
         |> json(%{message: "Signup and login successful", user: user})
 
-      {:error, reason} ->
+      {:error, %Ecto.ConstraintError{message: error_message}} ->
         conn
-        |> put_status(400)
-        |> json(%{error: "Signup failed", reason: reason})
-    end
-  end
-
-  defp create_user(username, email, password, role) do
-    case Repo.get_by(User, username: username ,email: email) do
-      nil ->
-        user =
-          %User{
-            username: username,
-            email: email,
-            role: role,
-            password: Comeonin.Bcrypt.hashpwsalt(password)
-          }
-        Repo.insert(user)
+        |> put_status(:forbidden)
+        |> render(:error, %{error: "ConstraintError", message: error_message})
       _ ->
-        {:error, "Email or username already in use"}
+        send_resp(conn, 500, "Internal Server Error")
     end
   end
 
