@@ -8,7 +8,7 @@
           </h3>
         </div>
         <div>
-          <button @click="togglePopup('trigger_create')"
+          <button @click="toggleCreateWorkingTimeNew()"
                   class="inline-block px-4 py-2 text-white duration-150 font-medium bg-[#161717] rounded-lg hover:bg-gray-400 md:text-sm">
             New Working Time
           </button>
@@ -273,6 +273,14 @@ export default {
       this.togglePopup('trigger_display');
 },
 toggleCreateWorkingTime(working_time) {
+      this.working_time_info = Object.assign({}, working_time);
+      this.togglePopup('trigger_create');
+    },
+    toggleCreateWorkingTimeNew() {
+      let working_time={
+        start_time: 'YYYY-MM-DDTHH:mm:ss' ,
+        end_time:'YYYY-MM-DDTHH:mm:ss'
+      }
       this.working_time_info = Object.assign({}, working_time);
       this.togglePopup('trigger_create');
     },
