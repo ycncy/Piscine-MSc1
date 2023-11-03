@@ -192,17 +192,11 @@ export default {
         selectable: true,
         weekends: true,
         select: (arg)=>{
-          id.value = id.value + 1
-
-          // const cal = arg.view.calendar
-          // cal.unselect()
-          // cal.addEvent({
-          //   id : `${id.value}`,
-          //   title: `New Event ${id.value}`,
-          //   start: arg.start,
-          //   end: arg.end,
-          //   allDay: true
-          //   })
+          let workingtime = {
+            start: arg.start,
+            end: arg.end,
+          }
+          this.toggleCreateWorkingTime(workingtime)
       },
       //update
       eventClick: (arg) => {
@@ -276,6 +270,10 @@ export default {
       this.working_time_info = Object.assign({}, working_time);
       this.togglePopup('trigger_display');
 },
+toggleCreateWorkingTime(working_time) {
+      this.working_time_info = Object.assign({}, working_time);
+      this.togglePopup('trigger_create');
+    },
 
     async updateWorkingTime() {
       const response = await working_time_service.update_working_time(
