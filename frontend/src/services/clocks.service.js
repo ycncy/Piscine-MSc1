@@ -41,8 +41,32 @@ const create_clocking_time = async (clocking_time, user_id, status) => {
     }
 }
 
+const update_clock = async (id, time, status) => {
+    try {
+        const response = await Axios.put(
+            `${clocks_url}/${id}`,
+            {
+                clock: {
+                    time: time,
+                    status: status
+                }
+            }
+        );
+        return {
+            status_code: response.status,
+            data: response.data.data
+        }
+    } catch (error) {
+        return {
+            status_code: error.response.status,
+            error: error.message
+        }
+    }
+}
+
 export const clocks_service = {    
     get_clock_by_user_id,
-    create_clocking_time
+    create_clocking_time,
+    update_clock
 }
 

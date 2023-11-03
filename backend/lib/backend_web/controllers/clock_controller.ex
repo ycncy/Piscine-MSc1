@@ -53,4 +53,24 @@ defmodule BackendWeb.ClockController do
         send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
+
+  def update_clock(conn, %{"id" => id, "clock" => clock_params}) do
+    case Integer.parse(id) do
+      {id_int, ""} ->
+        clock = Repo.get_by(Clock, user_id: id_int)
+
+        case clock do
+          nil ->
+            send_resp(conn, 404, Poison.encode!(%{error: "ClockNotFound", message: "Clock not found"}))
+          _ ->
+            with {:ok, %Clock{} = clock} <- Clocks.update_clock(clock, clock_params) do
+              render(conn, :show, clock: clock)
+            end
+        end
+      :error ->
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+    end
+  end
+
+
 end
