@@ -60,7 +60,7 @@
           <div>
             <label class="font-medium">Start time</label>
             <input type="text" required v-model="working_time_info.start_time"
-                   placeholder="Start datetime"
+              :placeholder="working_time_info.start_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
             />
           </div>
@@ -69,7 +69,7 @@
             <input
                 type="text"
                 required
-                placeholder="End datetime"
+                :placeholder="working_time_info.end_time"
                 v-model="working_time_info.end_time"
                 class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
             />
@@ -193,9 +193,11 @@ export default {
         weekends: true,
         select: (arg)=>{
           let workingtime = {
-            start: arg.start,
-            end: arg.end,
-          }
+            start_time: moment(new Date(arg.start)).format('YYYY-MM-DDTHH:mm:ss') ,
+          end_time: moment(new Date(arg.end)).format('YYYY-MM-DDTHH:mm:ss'),
+           
+          } 
+          console.log(arg.start)
           this.toggleCreateWorkingTime(workingtime)
       },
       //update
