@@ -71,8 +71,9 @@ const create_user = async (username, email, role) => {
                 }
             }
         );
+        console.log(response);
         return {
-            status_code: response.status,
+            status_code: response.status_code,
             data: response.data.data
         }
     } catch (error) {

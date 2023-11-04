@@ -33,15 +33,14 @@ const get_all_working_times = async () => {
     }
 }
 
-const update_working_time = async (working_time_id, start_time, end_time, status) => {
+const update_working_time = async (working_time_id, start_time, end_time) => {
     try {
         const response = await Axios.put(
             `${workingtimes_url}/${working_time_id}`,
             {
                 working_time: {
                     start_time: start_time,
-                    end_time: end_time,
-                    status: status
+                    end_time: end_time
                 }
             }
         );
@@ -74,15 +73,14 @@ const delete_working_time = async (working_time_id) => {
     }
 }
 
-const create_working_time = async (user_id, start_time, end_time, status) => {
+const create_working_time = async (user_id, start_time, end_time) => {
     try {
         const response = await Axios.post(
             `${workingtimes_url}/${user_id}`,
             {
                 working_time: {
                     start_time: start_time,
-                    end_time: end_time,
-                    status: status
+                    end_time: end_time
                 }
             }
         );
