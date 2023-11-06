@@ -23,7 +23,7 @@ defmodule BackendWeb.UserController do
             render(conn, :show, user: user)
         end
       :error ->
-        send_resp(conn, 400, %{error: "InvalidUserID", message: "Invalid user ID format"})
+        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
     end
   end
 
@@ -50,7 +50,7 @@ defmodule BackendWeb.UserController do
       {:error, %Ecto.ConstraintError{message: error_message}} ->
         conn
         |> put_status(:forbidden)
-        |> render(:error, %{error: "ConstraintError", message: error_message})
+        |> render(:error, Poison.encode!(%{error: "ConstraintError", message: error_message}))
       _ ->
         send_resp(conn, 500, "Internal Server Error")
     end
