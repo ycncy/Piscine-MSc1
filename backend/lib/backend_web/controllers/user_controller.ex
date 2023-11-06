@@ -9,15 +9,15 @@ defmodule BackendWeb.UserController do
 
   def get_all(conn, _params) do
     users = Users.list_users()
-
-    render(conn, :index, users: users)
+    conn
+    |> put_status(200)
+    |> json(users)
   end
 
   def delete_all_users(conn, _params) do
     Repo.delete_all(User)
-
     conn
-    |> put_status(:ok)
+    |> put_status(200)
     |> json(%{message: "Tous les utilisateurs ont été supprimés"})
   end
 
@@ -26,12 +26,18 @@ defmodule BackendWeb.UserController do
       {user_id_int, _} ->
         case Repo.get(User, user_id_int) do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+            conn
+            |> put_status(404)
+            |> json(%{error: "UserNotFound", message: "User not found"})
           user ->
-            render(conn, :show, user: user)
+            conn
+            |> put_status(200)
+            |> json(user)
         end
       :error ->
-        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
 
@@ -42,9 +48,13 @@ defmodule BackendWeb.UserController do
 
     case Repo.get_by(User, username: username, email: email) do
       nil ->
-        send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No user found for credentials"}))
+        conn
+        |> put_status(404)
+        |> json(%{error: "NoResultError", message: "No user found for credentials"})
       user ->
-        render(conn, :show, user: user)
+        conn
+        |> put_status(200)
+        |> json(user)
     end
   end
 
@@ -54,39 +64,79 @@ defmodule BackendWeb.UserController do
     case Users.create_user(user_params) do
       {:ok, %User{} = user} ->
         conn
-        |> put_status(:created)
-        |> render(:show, user: user)
+        |> put_status(201)
+        |> json(user)
 
       {:error, %Ecto.ConstraintError{message: error_message}} ->
         conn
-        |> put_status(:forbidden)
-        |> render(:error, Poison.encode!(%{error: "ConstraintError", message: error_message}))
+        |> put_status(403)
+        |> json(%{error: "ConstraintError", message: error_message})
       _ ->
-        send_resp(conn, 500, "Internal Server Error")
+        conn
+        |> put_status(500)
+        |> json(%{error: "InternalServerError", message: "Internal Server Error"})
     end
   end
 
   def update_user(conn, %{"userID" => user_id, "user" => user_params}) do
-    try do
-      user = Users.get_user!(user_id)
+    case Integer.parse(user_id) do
+      {user_id_int, _} ->
+        case Users.get_user!(user_id_int) do
+          %User{} = user ->
+            user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
+            case Users.update_user(user, user_params) do
+              {:ok, %User{} = updated_user} ->
+                conn
+                |> put_status(200)
+                |> json(updated_user)
 
-      with {:ok, %User{} = user} <- Users.update_user(user, user_params) do
-        render(conn, :show, user: user)
-      end
-    rescue
-      FunctionClauseError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "User #{user_id} not found"}))
+              {:error, _} ->
+                conn
+                |> put_status(400)
+                |> json(%{error: "UpdateError", message: "Failed to update the user"})
+            end
+
+          :error ->
+            conn
+            |> put_status(404)
+            |> json(%{error: "UserNotFound", message: "User not found"})
+        end
+
+      :error ->
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
 
   def delete_user(conn, %{"userID" => user_id}) do
-    try do
-      user = Users.get_user!(user_id)
+    case Integer.parse(user_id) do
+      {user_id_int, _} ->
+        case Users.get_user!(user_id_int) do
+          %User{} = user ->
+            case Users.delete_user(user) do
+              {:ok, %User{} = deleted_user} ->
+                conn
+                |> put_status(204)
+                |> json(deleted_user)
 
-      with {:ok, %User{}} <- Users.delete_user(user) do
-        send_resp(conn, :no_content, "")
-      end
-    rescue
-      Ecto.NoResultsError -> send_resp(conn, 404, Poison.encode(%{error: "NoResultError", message: "User #{user_id} not found"}))
+              {:error, _} ->
+                conn
+                |> put_status(500)
+                |> json(%{error: "DeleteError", message: "Failed to delete the user"})
+            end
+
+          :error ->
+            conn
+            |> put_status(404)
+            |> json(%{error: "UserNotFound", message: "User not found"})
+        end
+
+      :error ->
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
+
 end

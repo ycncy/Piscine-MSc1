@@ -20,7 +20,6 @@ defmodule BackendWeb.WorkingTimeJSON do
       id: working_time.id,
       start_time: working_time.start_time,
       end_time: working_time.end_time,
-      status: working_time.status,
       user_id: working_time.user_id
     }
   end

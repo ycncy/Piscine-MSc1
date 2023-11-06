@@ -14,34 +14,34 @@ defmodule BackendWeb.WorkingTimeController do
       {user_id_int, _} ->
         case Repo.get(User, user_id_int) do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+            conn
+            |> put_status(404)
+            |> json(%{error: "UserNotFound", message: "User not found"})
           _ ->
             query = from(x in WorkingTime, where: x.user_id == ^user_id_int)
 
-            working_times = Repo.all(query)
+            IO.inspect(query)
 
-            case working_times do
-              :error ->
-                send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
-              _ ->
-                render(conn, :index, working_times: working_times)
+            with working_times <- Repo.all(query) do
+              conn
+              |> put_status(200)
+              |> json(working_times)
             end
         end
       :error ->
-        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
 
   def get_list_working_times(conn, _params) do
     query = from(x in WorkingTime, select: x)
 
-    working_times = Repo.all(query)
-
-    case working_times do
-      [] ->
-        render(conn, :index, working_times: working_times)
-      _ ->
-        send_resp(conn, 404, Poison.encode!(%{error: "NoResultError", message: "No working times found"}))
+    with working_times <- Repo.all(query) do
+      conn
+      |> put_status(200)
+      |> json(working_times)
     end
   end
 
@@ -50,18 +50,22 @@ defmodule BackendWeb.WorkingTimeController do
       {user_id_int, _} ->
         case Repo.get(User, user_id_int) do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+            conn
+            |> put_status(404)
+            |> json(%{error: "UserNotFound", message: "User not found"})
           _ ->
             params = Map.merge(%{"user_id" => user_id}, conn.body_params["working_time"])
 
             with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.create_working_time(params) do
               conn
-              |> put_status(:created)
-              |> render(:show, working_time: working_time)
+              |> put_status(201)
+              |> json(working_time)
             end
         end
       :error ->
-        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
 
@@ -70,60 +74,76 @@ defmodule BackendWeb.WorkingTimeController do
       {user_id_int, ""} ->
         case Repo.get(User, user_id_int) do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "UserNotFound", message: "User not found"}))
+            conn
+            |> put_status(404)
+            |> json(%{error: "UserNotFound", message: "User not found"})
           _ ->
             case Integer.parse(id) do
               {working_time_id_int, ""} ->
-                working_time = Repo.get_by(WorkingTime, user_id: user_id_int, id: working_time_id_int)
-
-                case working_time do
+                case Repo.get_by(WorkingTime, user_id: user_id_int, id: working_time_id_int) do
                   nil ->
-                    send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
-                  _ ->
-                    render(conn, :show, working_time: working_time)
+                    conn
+                    |> put_status(404)
+                    |> json(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"})
+                  working_time ->
+                    conn
+                    |> put_status(200)
+                    |> json(working_time)
                 end
               :error ->
-                 send_resp(conn, 400, Poison.encode!(%{error: "InvalidWorkingTimeID", message: "Invalid working time ID format"}))
+                conn
+                |> put_status(400)
+                |> json(%{error: "InvalidWorkingTimeID", message: "Invalid working time ID format"})
             end
         end
       :error ->
-        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
 
   def update_working_time(conn, %{"id" => id, "working_time" => working_time_params}) do
     case Integer.parse(id) do
       {id_int, ""} ->
-        working_time = Repo.get(WorkingTime, id_int)
-
-        case working_time do
+        case Repo.get(WorkingTime, id_int) do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
-          _ ->
-            with {:ok, %WorkingTime{} = working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
-              render(conn, :show, working_time: working_time)
+            conn
+            |> put_status(404)
+            |> json(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"})
+          working_time ->
+            with {:ok, %WorkingTime{} = updated_working_time} <- WorkingTimes.update_working_time(working_time, working_time_params) do
+              conn
+              |> put_status(200)
+              |> json(updated_working_time)
             end
         end
       :error ->
-        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidWorkingTimeID", message: "Invalid working time ID format"})
     end
   end
 
   def delete_working_time(conn, %{"id" => id}) do
     case Integer.parse(id) do
       {id_int, ""} ->
-        working_time = Repo.get(WorkingTime, id_int)
-
-        case working_time do
+        case Repo.get(WorkingTime, id_int) do
           nil ->
-            send_resp(conn, 404, Poison.encode!(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"}))
-          _ ->
-            with {:ok, %WorkingTime{}} <- WorkingTimes.delete_working_time(working_time) do
-              send_resp(conn, :no_content, "")
+            conn
+            |> put_status(404)
+            |> json(%{error: "WorkingTimeNotFound", message: "WorkingTime not found"})
+          working_time ->
+            with {:ok, _} <- WorkingTimes.delete_working_time(working_time) do
+              conn
+              |> put_status(204)
+              |> json(%{})
             end
         end
       :error ->
-        send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        conn
+        |> put_status(400)
+        |> json(%{error: "InvalidWorkingTimeID", message: "Invalid working time ID format"})
     end
   end
 end
