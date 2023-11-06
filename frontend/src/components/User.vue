@@ -94,7 +94,7 @@
         </PopupForm>
       </div>
     </div>
-    <div id="selectUser" class="w-1/2 flex flex-row justify-end items-center">
+    <div v-if="['administrator', 'general_manager', 'manager'].includes(authenticatedUser.role)" id="selectUser" class="w-1/2 flex flex-row justify-end items-center">
       <div class="flex flex-row w-1/3 justify-around rounded-2xl bg-[#161717]">
         <div class="flex flex-col gap-2 w-3/4 justify-center">
           <input
@@ -121,8 +121,7 @@
         <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_update')" type="button"><span class="material-symbols-outlined"> manage_accounts </span></button>
         <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_delete')" type="button"><span class="material-symbols-outlined">person_remove</span></button>
       </div>
-      <label for="toggleB" class="flex items-center cursor-pointer">
-      </label>
+      <label for="toggleB" class="flex items-center cursor-pointer"></label>
     </div>
   </div>
 </template>
@@ -130,13 +129,14 @@
 <script>
 import PopupForm from "@/components/PopupForm.vue";
 import {users_service} from "@/services/users.service";
-import {ref} from "vue";
+import {computed, ref} from "vue";
+import {useStore} from "vuex";
 
 export default {
   name: "User",
   data() {
     return {
-      current_user: undefined,
+      current_user: this,
       selected_user: {},
       user_form_info: {},
       users: [],
@@ -156,7 +156,12 @@ export default {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
     }
 
+    const store = useStore();
+
+    const authenticatedUser = store.getters.getUser;
+
     return {
+      authenticatedUser,
       popupTriggers,
       togglePopup
     }

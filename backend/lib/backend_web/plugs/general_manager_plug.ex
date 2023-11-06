@@ -5,6 +5,7 @@ defmodule BackendWeb.GeneralManagerPlug do
   def init(opts), do: opts
 
   def call(conn, _opts) do
+    IO.inspect(Map.get(conn.req_cookies, "auth_token"))
     case Map.get(conn.req_cookies, "auth_token") do
       nil ->
         conn
@@ -17,7 +18,7 @@ defmodule BackendWeb.GeneralManagerPlug do
             case Map.get(claims, "role") do
               "general_manager" ->
                 conn
-              "admin" ->
+              "administrator" ->
                 conn
               nil ->
                 conn

@@ -5,8 +5,13 @@ import UserLayout from "@/components/UserLayout.vue";
 import WorkingTimeEditor from "@/components/WorkingTimes.vue";
 import NotFound from "@/components/Errors/NotFound.vue";
 import DashboardHome from "@/components/DashboardHome.vue";
+import Login from "@/components/Authentication/Login.vue";
 
 const routes = [
+    {
+        path: "/login",
+        component: Login
+    },
     {
         path: "",
         component: UserLayout,

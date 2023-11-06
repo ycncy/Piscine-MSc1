@@ -7,7 +7,7 @@
             Working Times
           </h3>
         </div>
-        <div>
+        <div v-if="['administrator', 'general_manager'].includes(authenticatedUser.role)">
           <button @click="togglePopup('trigger_create')"
                   class="inline-block px-4 py-2 text-white duration-150 font-medium bg-[#161717] rounded-lg hover:bg-gray-400 md:text-sm">
             New Working Time
@@ -21,8 +21,7 @@
             <th class="py-3 px-6">Username</th>
             <th class="py-3 px-6">Start datetime</th>
             <th class="py-3 px-6">End datetime</th>
-            <th class="py-3 px-6">Status</th>
-            <th class="py-3 px-6"></th>
+            <th v-if="authenticatedUser.role === 'administrator' || authenticatedUser.role === 'general_manager'" class="py-3 px-6"></th>
           </tr>
           </thead>
           <tbody class="bg-white text-gray-500 divide-y">
@@ -30,10 +29,7 @@
               <td class="px-6 py-4 whitespace-nowrap">{{ current_user["username"] }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.start_time) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.end_time) }}</td>
-              <td :class="['px-6 py-4 whitespace-nowrap', 'w-1/12', working_time.status ? 'text-green-600' : 'text-red-600']">
-                {{ working_time.status ? 'Active' : 'Inactive' }}
-              </td>
-              <td class="text-left px-6 whitespace-nowrap w-1/12 space-x-4">
+              <td v-if="authenticatedUser.role === 'administrator' || authenticatedUser.role === 'general_manager'" class="text-left px-6 whitespace-nowrap w-1/12 space-x-4">
                 <button class="text-yellow-600" @click="toggleEditWorkingTime(working_time)">
                   <span class="material-symbols-outlined">
                     edit
@@ -133,7 +129,6 @@
 import User from "@/App.vue";
 import PopupForm from "@/components/PopupForm.vue";
 import {working_time_service} from "@/services/workingtimes.service"
-// import {get_working_times_by_id} from "@/services/workingtimes.service"
 import moment from "moment";
 import {users_service} from "@/services/users.service";
 import FullCalendar from '@fullcalendar/vue3'
@@ -141,7 +136,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
-import { reactive, ref } from "vue"
+import { ref } from "vue"
+import {useStore} from "vuex";
 
 const id = ref(10)
 
@@ -157,7 +153,7 @@ export default {
       status: false
       },
       calendarOptions: {
-         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+        plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
         headerToolbar: {
           left: 'prev,next today',
@@ -167,22 +163,6 @@ export default {
         editable: true,
         selectable: true,
         weekends: true,
-        select: (arg)=>{
-          id.value = id.value + 1
-
-          // const cal = arg.view.calendar
-          // cal.unselect()
-          // cal.addEvent({
-          //   id : `${id.value}`,
-          //   title: `New Event ${id.value}`,
-          //   start: arg.start,
-          //   end: arg.end,
-          //   allDay: true
-          //   })
-      },
-      eventClick: (arg) => {
-        console.log(arg.event.title)
-        }
       },
     }
   },
@@ -197,7 +177,12 @@ export default {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
     }
 
+    const store = useStore();
+
+    const authenticatedUser = store.getters.getUser;
+
     return {
+      authenticatedUser,
       popupTriggers,
       togglePopup
     }
@@ -223,8 +208,6 @@ export default {
       });
 
     },
-
-
     formatDateTime(dateTime) {
       return moment(new Date(dateTime)).format('MMMM Do YYYY, h:mm');
     },
@@ -291,8 +274,6 @@ export default {
     await users_service.get_user_by_id(this.$route.params.userID).then((response) => {
       this.current_user = response.data
     });
-
-    // console.log(this.current_user)
 
     await working_time_service.get_working_times_by_id(this.$route.params.userID)
         .then((result) => {

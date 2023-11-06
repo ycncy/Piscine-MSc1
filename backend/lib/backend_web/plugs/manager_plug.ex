@@ -19,7 +19,7 @@ defmodule BackendWeb.ManagerPlug do
                 conn
               "general_manager" ->
                 conn
-              "admin" ->
+              "administrator" ->
                 conn
               _ ->
                 conn

@@ -11,8 +11,6 @@ defmodule BackendWeb.Endpoint do
     same_site: "Lax"
   ]
 
-  plug CORSPlug
-
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
@@ -49,5 +47,6 @@ defmodule BackendWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug CORSPlug, origin: ["http://localhost:8080"], headers: ["Authorization", "Content-Type", "Accept"]
   plug BackendWeb.Router
 end
