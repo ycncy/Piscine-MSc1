@@ -92,16 +92,19 @@ import {working_time_service} from "@/services/workingtimes.service";
         },
         async toggle() {
           this.isActive = this.isActive ? false : true;
-          const get_clocks = await clocks_service.get_clock_by_user_id(
-            this.$route.params.userID
-          );
-          switch (get_clocks.status_code) {
-            case 200:
-            this.registerClocks(this.isActive,get_clocks.data.length);
-              break;
-            case 404:
-            this.registerClocks(this.isActive,0);
-          }
+
+          const check_clock = await clocks_service.check_clock(this.$route.params.userID, this.isActive,new Date())
+          
+          // const get_clocks = await clocks_service.get_clock_by_user_id(
+          //   this.$route.params.userID
+          // );
+          // switch (get_clocks.status_code) {
+          //   case 200:
+          //   this.registerClocks(this.isActive,get_clocks.data.length);
+          //     break;
+          //   case 404:
+          //   this.registerClocks(this.isActive,0);
+          // }
 
         },
         startDateTimer() {
