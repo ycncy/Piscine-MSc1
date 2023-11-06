@@ -13,6 +13,14 @@ defmodule BackendWeb.UserController do
     render(conn, :index, users: users)
   end
 
+  def delete_all_users(conn, _params) do
+    Repo.delete_all(User)
+
+    conn
+    |> put_status(:ok)
+    |> json(%{message: "Tous les utilisateurs ont été supprimés"})
+  end
+
   def get_user_by_id(conn, %{"userID" => user_id}) do
     case Integer.parse(user_id) do
       {user_id_int, _} ->
@@ -41,6 +49,8 @@ defmodule BackendWeb.UserController do
   end
 
   def create_user(conn, %{"user" => user_params}) do
+    user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
+
     case Users.create_user(user_params) do
       {:ok, %User{} = user} ->
         conn

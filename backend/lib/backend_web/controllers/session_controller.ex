@@ -15,8 +15,6 @@ defmodule BackendWeb.SessionUserController do
       {:ok, user} ->
         csrf_token = generate_csrf_token()
 
-        IO.inspect(csrf_token)
-
         jwt_payload = %{
           "user_id" => user.id,
           "role" => user.role,
@@ -74,6 +72,7 @@ defmodule BackendWeb.SessionUserController do
   end
 
   defp authenticate(email, password) do
+    IO.inspect(password)
     case Repo.get_by(User, email: email) do
       nil ->
         {:error, "User not found"}
@@ -88,7 +87,7 @@ defmodule BackendWeb.SessionUserController do
     end
   end
 
-  defp check_password(%User{password: stored_password}, given_password) do
+  def check_password(%User{password: stored_password}, given_password) do
     Comeonin.Bcrypt.checkpw(given_password, stored_password)
   end
 

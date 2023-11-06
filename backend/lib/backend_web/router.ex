@@ -2,6 +2,9 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
 
   import BackendWeb.AdminPlug
+  import BackendWeb.ManagerPlug
+  import BackendWeb.GeneralManagerPlug
+  import BackendWeb.DefaultPlug
 
   pipeline :api do
     plug CORSPlug
@@ -17,7 +20,27 @@ defmodule BackendWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :browser do
+  pipeline :general_manager do
+    plug BackendWeb.GeneralManagerPlug
+    plug CORSPlug
+    plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :put_secure_browser_headers
+  end
+
+  pipeline :manager do
+    plug BackendWeb.ManagerPlug
+    plug CORSPlug
+    plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :put_secure_browser_headers
+  end
+
+  pipeline :default do
+    plug BackendWeb.DefaultPlug
+    plug CORSPlug
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -25,39 +48,45 @@ defmodule BackendWeb.Router do
   end
 
   scope "/api/authentication", BackendWeb do
-    pipe_through :browser
-
+    pipe_through :api
     post "/login", SessionUserController, :login
+
+    pipe_through :default
     post "/logout", SessionUserController, :logout
   end
 
   scope "/api/users", BackendWeb do
-    pipe_through :admin
-
+    pipe_through :general_manager
     get "/all", UserController, :get_all
-    get "/", UserController, :get_user_by_credentials
-    post "/", UserController, :create_user
-    get "/:userID", UserController, :get_user_by_id
     put "/:userID", UserController, :update_user
     delete "/:userID", UserController, :delete_user
+
+    pipe_through :default
+    post "/delete", UserController, :delete_all_users
+    get "/", UserController, :get_user_by_credentials
+    get "/:userID", UserController, :get_user_by_id
+  end
+
+  scope "/api/users", BackendWeb do
+    pipe_through :admin
+    post "/", UserController, :create_user
   end
 
   scope "/api/clocks", BackendWeb do
-    pipe_through :api
+    pipe_through :default
 
     get "/:userID", ClockController, :get_clocks_by_userId
     post "/:userID", ClockController, :create_clocking_time
   end
 
   scope "/api/workingtimes", BackendWeb do
-    pipe_through :api
-
+    pipe_through :default
     get  "/:userID", WorkingTimeController, :get_all_working_times
-    get  "/", WorkingTimeController, :get_list_working_times
     get  "/:userID/:id", WorkingTimeController, :get_one_working_time
-    post "/:userID", WorkingTimeController, :create_working_time
+
+    pipe_through :manager
     put "/:id", WorkingTimeController, :update_working_time
     delete "/:id", WorkingTimeController, :delete_working_time
-
+    post "/:userID", WorkingTimeController, :create_working_time
   end
 end
