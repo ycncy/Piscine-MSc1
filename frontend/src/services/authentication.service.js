@@ -6,9 +6,9 @@ const login = async (email, password) => {
         const response = await Axios.post(
             `${auth_url}/login`,
             {
-                user: {
-                    email: email,
-                    password: password
+                "user": {
+                    "email": email,
+                    "password": password
                 }
             },
         );
