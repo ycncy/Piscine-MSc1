@@ -1,5 +1,4 @@
 import Axios from "@/services/api.service";
-import store from "@/store";
 const auth_url = "/authentication";
 
 const login = async (email, password) => {
