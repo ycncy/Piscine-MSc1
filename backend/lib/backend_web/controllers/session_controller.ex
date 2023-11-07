@@ -72,7 +72,6 @@ defmodule BackendWeb.SessionUserController do
   end
 
   defp authenticate(email, password) do
-    IO.inspect(password)
     case Repo.get_by(User, email: email) do
       nil ->
         {:error, "User not found"}

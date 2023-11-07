@@ -7,11 +7,15 @@ const get_all_users = async () => {
         const response = await Axios.get(
             `${users_url}/all`
         );
+
         return {
             status_code: response.status,
             data: response.data
         }
     } catch (error) {
+
+
+        console.log(error)
         return {
             status_code: error.response.status,
             error: error.message

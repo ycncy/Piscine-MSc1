@@ -4,6 +4,8 @@ services:
   postgres:
     image: postgres:alpine
     restart: always
+    ports:
+      - "5434:5434"
     volumes:
       - ./postgres-data:/var/lib/postgresql
     environment:

@@ -53,11 +53,6 @@ export default {
         this.error = response.error;
       }
     },
-    async test() {
-      const resp = await axios.get("http://localhost:4000/api/users/all", {withCredentials: true});
-
-      console.log(resp)
-    }
   },
 };
 </script>

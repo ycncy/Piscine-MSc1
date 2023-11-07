@@ -295,6 +295,9 @@ export default {
       if (this.authenticated_user.role !== "employee") {
         await users_service.get_all_users().then(response => {
           this.users = response.data;
+        }).catch(response => {
+
+          console.log(response)
         });
       }
     }

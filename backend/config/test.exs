@@ -10,7 +10,7 @@ database: "backend_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool_size: 10
 
 config :backend, BackendWeb.Endpoint,
-  http: [ip: {0, 0, 0, 1}, port: 4002],
+  http: [ip: {0, 0, 0, 0}, port: 4002],
   secret_key_base: "KdufjxNLIK2iKpP13NOKPDJSfa5ErdcpArsu3T/u/A5Dub1KQ/BcIAz9ZqtxayGy",
   server: false
 
