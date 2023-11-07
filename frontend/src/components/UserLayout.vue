@@ -11,11 +11,17 @@
 <script>
 import User from "@/components/User.vue";
 import Navbar from "@/components/Navbar.vue";
+import {authentication_service} from "@/services/authentication.service";
 
 export default {
   components: {
     Navbar,
     User,
   },
+  mounted() {
+    if (!authentication_service.is_logged()) {
+      this.$router.push("/login");
+    }
+  }
 };
 </script>

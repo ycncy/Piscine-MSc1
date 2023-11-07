@@ -9,7 +9,7 @@ const get_all_users = async () => {
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -26,7 +26,7 @@ const get_user_by_id = async (user_id) => {
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -49,7 +49,7 @@ const get_user_by_credentials = async (username, email) => {
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -59,7 +59,7 @@ const get_user_by_credentials = async (username, email) => {
     }
 }
 
-const create_user = async (username, email, role) => {
+const create_user = async (username, email, password, role) => {
     try {
         const response = await Axios.post(
             `${users_url}`,
@@ -67,13 +67,14 @@ const create_user = async (username, email, role) => {
                 user: {
                     username: username,
                     email: email,
+                    password: password,
                     role: role
                 }
             }
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -97,7 +98,7 @@ const update_user = async (user_id, username, email, role) => {
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -112,7 +113,7 @@ const delete_user = async (user_id) => {
         const response = await Axios.delete(`${users_url}/${user_id}`);
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {

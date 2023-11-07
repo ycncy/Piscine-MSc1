@@ -51,15 +51,15 @@ defmodule BackendWeb.Router do
   end
 
   scope "/api/users", BackendWeb do
+    pipe_through :default
+    get "/:userID", UserController, :get_user_by_id
+    get "/", UserController, :get_user_by_credentials
+
     pipe_through :general_manager
     get "/all", UserController, :get_all
     put "/:userID", UserController, :update_user
     delete "/:userID", UserController, :delete_user
-
-    pipe_through :default
     post "/delete", UserController, :delete_all_users
-    get "/", UserController, :get_user_by_credentials
-    get "/:userID", UserController, :get_user_by_id
   end
 
   scope "/api/users", BackendWeb do

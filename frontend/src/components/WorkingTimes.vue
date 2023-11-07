@@ -7,7 +7,7 @@
             Working Times
           </h3>
         </div>
-        <div v-if="['administrator', 'general_manager'].includes(authenticatedUser.role)">
+        <div v-if="['administrator', 'general_manager'].includes(authenticated_user.role)">
           <button @click="togglePopup('trigger_create')"
                   class="inline-block px-4 py-2 text-white duration-150 font-medium bg-[#161717] rounded-lg hover:bg-gray-400 md:text-sm">
             New Working Time
@@ -21,30 +21,36 @@
             <th class="py-3 px-6">Username</th>
             <th class="py-3 px-6">Start datetime</th>
             <th class="py-3 px-6">End datetime</th>
-            <th v-if="authenticatedUser.role === 'administrator' || authenticatedUser.role === 'general_manager'" class="py-3 px-6"></th>
+            <th v-if="['administrator', 'general_manager'].includes(authenticated_user.role)" class="py-3 px-6"></th>
           </tr>
           </thead>
           <tbody class="bg-white text-gray-500 divide-y">
-            <tr v-if="this.working_times.length > 0" v-for="(working_time, index) in working_times" :key="index">
-              <td class="px-6 py-4 whitespace-nowrap">{{ current_user["username"] }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.start_time) }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.end_time) }}</td>
-              <td v-if="authenticatedUser.role === 'administrator' || authenticatedUser.role === 'general_manager'" class="text-left px-6 whitespace-nowrap w-1/12 space-x-4">
-                <button class="text-yellow-600" @click="toggleEditWorkingTime(working_time)">
+          <tr v-if="!working_times">
+            <td class="px-6 py-4 whitespace-nowrap text-center" :colspan="5">
+              <Loader class="flex justify-center"/>
+            </td>
+          </tr>
+          <tr v-else-if="this.working_times.length === 0">
+            <td class="px-6 py-4 whitespace-nowrap text-center" :colspan="5">No working times found for this user</td>
+          </tr>
+          <tr v-else v-for="(working_time, index) in working_times" :key="index">
+            <td class="px-6 py-4 whitespace-nowrap">{{ current_user["username"] }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.start_time) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ formatDateTime(working_time.end_time) }}</td>
+            <td v-if="['administrator', 'general_manager'].includes(authenticated_user.role)"
+                class="text-left px-6 whitespace-nowrap w-1/12 space-x-4">
+              <button class="text-yellow-600" @click="toggleEditWorkingTime(working_time)">
                   <span class="material-symbols-outlined">
                     edit
                   </span>
-                </button>
-                <button class="text-red-600" @click="toggleDeleteWorkingTime(working_time)">
+              </button>
+              <button class="text-red-600" @click="toggleDeleteWorkingTime(working_time)">
                   <span class="material-symbols-outlined">
                     delete
                   </span>
-                </button>
-              </td>
-            </tr>
-            <tr v-else>
-              <td class="px-6 py-4 whitespace-nowrap text-center" :colspan="5">No working times found for this user</td>
-            </tr>
+              </button>
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -120,8 +126,7 @@
         </form>
       </PopupForm>
     </div>
-    <FullCalendar :options="calendarOptions" ref="fullCalendar" />
-
+    <FullCalendar :options="calendarOptions" ref="fullCalendar"/>
   </div>
 </template>
 
@@ -136,21 +141,24 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
-import { ref } from "vue"
+import {ref} from "vue"
 import {useStore} from "vuex";
+import {authentication_service} from "@/services/authentication.service";
+import Loader from "@/components/Loader.vue";
 
 const id = ref(10)
 
 export default {
   name: "WorkingTimes",
-  components: {PopupForm, User, FullCalendar},
+  components: {Loader, PopupForm, User, FullCalendar},
   data() {
     return {
-      working_times: [],
+      authenticated_user: {},
+      working_times: undefined,
       current_user: undefined,
       editor_mode_boolean: false,
       working_time_info: {
-      status: false
+        status: false
       },
       calendarOptions: {
         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
@@ -172,41 +180,39 @@ export default {
       trigger_delete: false,
       trigger_create: false
     });
-    
+
     const togglePopup = (trigger) => {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
     }
 
-    const store = useStore();
-
-    const authenticatedUser = store.getters.getUser;
-
     return {
-      authenticatedUser,
       popupTriggers,
       togglePopup
     }
   },
   methods: {
-    getWorkingtimes: function () {
-      users_service.get_user_by_id(this.$route.params.userID).then((response) => {
-        this.current_user = response.data
-      })
+    getWorkingtimes: async function () {
+      const user_id = this.$route.params.userID;
 
-      working_time_service.get_working_times_by_id(this.$route.params.userID).then((result) => {
-        this.workingtimes = result.data;
+      if (!isNaN(parseInt(user_id))) {
+        await users_service.get_user_by_id(user_id).then((response) => {
+          this.current_user = response.data
+        })
 
-        for (const workingTime of this.workingtimes) {
-        this.$refs.fullCalendar.getApi().addEvent({
-          id: workingTime.id, 
-          title: 'Working Time', 
-          start: workingTime.start_time, 
-          end: workingTime.end_time, 
-          allDay: false, 
+        working_time_service.get_working_times_by_id(user_id).then((result) => {
+          this.workingtimes = result.data;
+
+          for (const workingTime of this.workingtimes) {
+            this.$refs.fullCalendar.getApi().addEvent({
+              id: workingTime.id,
+              title: 'Working Time',
+              start: workingTime.start_time,
+              end: workingTime.end_time,
+              allDay: false,
+            });
+          }
         });
-       }
-      });
-
+      }
     },
     formatDateTime(dateTime) {
       return moment(new Date(dateTime)).format('MMMM Do YYYY, h:mm');
@@ -241,8 +247,6 @@ export default {
           this.working_time_info.id
       );
 
-      console.log(response)
-
       switch (response.status_code) {
         case 204:
           this.togglePopup('trigger_delete');
@@ -271,14 +275,21 @@ export default {
     }
   },
   async mounted() {
-    await users_service.get_user_by_id(this.$route.params.userID).then((response) => {
-      this.current_user = response.data
-    });
+    this.authenticated_user = JSON.parse(authentication_service.get_user())
 
-    await working_time_service.get_working_times_by_id(this.$route.params.userID)
-        .then((result) => {
-          this.working_times = result.data;
-        });
+    const user_id = this.$route.params.userID;
+
+    if (!isNaN(parseInt(user_id))) {
+      await users_service.get_user_by_id(user_id)
+          .then((response) => {
+            this.current_user = response.data
+          });
+
+      await working_time_service.get_working_times_by_id(user_id)
+          .then((result) => {
+            this.working_times = result.data;
+          });
+    }
   },
   created() {
     this.getWorkingtimes();

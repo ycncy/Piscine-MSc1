@@ -19,7 +19,7 @@ defmodule BackendWeb.GeneralManagerPlug do
                 conn
               "administrator" ->
                 conn
-              nil ->
+              _ ->
                 conn
                 |> put_status(403)
                 |> send_resp(:forbidden, "Forbidden")

@@ -8,6 +8,9 @@
       Please select a user with the search-bar to start using it.
     </h2>
   </div>
+  <div v-else-if="!this.current_user">
+    <Loader class="w-full flex py-16 justify-center"/>
+  </div>
   <div v-else class="flex flex-col h-1/4 justify-center items-center">
     <h1 class="text-gray-400 text-3xl" v-if="this.current_user">You have selected user : {{ this.current_user.username }}</h1>
     <section v-else-if="!this.invalid_user" class="flex items-center h-1/2 bg-[#242424]">
@@ -36,9 +39,11 @@
 <script>
 
 import {users_service} from "@/services/users.service";
+import Loader from "@/components/Loader.vue";
 
 export default {
   name: "DashboardHome",
+  components: {Loader},
   data() {
     return {
       current_user: undefined,
@@ -52,12 +57,14 @@ export default {
     } else {
       const user_id = this.$route.params.userID;
 
-      await users_service.get_user_by_id(user_id).then(response => {
-        if (response.status_code === 404) this.invalid_user = true
-        if (response.status_code === 500) this.invalid_user = true
-        this.current_user = response.data;
-      }).catch(() => {
-      })
+      if (!isNaN(parseInt(user_id))) {
+        await users_service.get_user_by_id(user_id).then(response => {
+          if (response.status_code === 404) this.invalid_user = true
+          if (response.status_code === 500) this.invalid_user = true
+          this.current_user = response.data;
+        }).catch(() => {
+        })
+      }
     }
   }
 }

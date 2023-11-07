@@ -5,7 +5,7 @@ const clocks_url = "/clocks";
 const get_clock_by_user_id = async (user_id) => {
     try {
         const response = await Axios.get(`${clocks_url}/${user_id}`);
-        console.log("clocks", response.data.data);
+
         return {
             status_code: response.status,
             data: response.data.data

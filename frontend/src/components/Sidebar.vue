@@ -38,7 +38,6 @@ export default {
     methods: {
         getUsers: function () {
             users_service.get_all_users().then((result) => {
-            console.log( result.data );
             this.users_list = result.data;
         });
         },

@@ -16,15 +16,26 @@
             </div>
             <div>
               <label>E-mail</label>
-              <input class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" type="email"
-                     @change="() => this.error = undefined"
-                     pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}" placeholder="E-mail address" name="email"
-                     v-model="user_form_info.email" required>
+              <input
+                  class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+                  type="email"
+                  @change="() => this.error = undefined"
+                  pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}" placeholder="E-mail address" name="email"
+                  v-model="user_form_info.email" required>
+            </div>
+            <div>
+              <label>Password</label>
+              <input type="password" required v-model="user_form_info.password"
+                     placeholder="Password"
+                     class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+              />
             </div>
             <div class="flex flex-col gap-2">
               <label>Role</label>
-              <select class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" v-model="user_form_info.role"
-                      name="role" required>
+              <select
+                  class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+                  v-model="user_form_info.role"
+                  name="role" required>
                 <option selected disabled>Select role</option>
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
@@ -53,11 +64,13 @@
             </div>
             <div>
               <label>E-mail</label>
-              <input class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg" type="email"
-                     @change="() => this.error = undefined"
-                     pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}"
-                     :placeholder="current_user.email" name="email"
-                     v-model="user_form_info.email" required>
+              <input
+                  class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
+                  type="email"
+                  @change="() => this.error = undefined"
+                  pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}"
+                  :placeholder="current_user.email" name="email"
+                  v-model="user_form_info.email" required>
             </div>
             <div class="flex flex-col gap-2">
               <label>Role</label>
@@ -94,8 +107,9 @@
         </PopupForm>
       </div>
     </div>
-    <div v-if="['administrator', 'general_manager', 'manager'].includes(authenticatedUser.role)" id="selectUser" class="w-1/2 flex flex-row justify-end items-center">
-      <div class="flex flex-row w-1/3 justify-around rounded-2xl bg-[#161717]">
+    <div id="selectUser"
+         class="w-1/2 flex flex-row justify-end items-center">
+      <div v-if="['administrator', 'general_manager', 'manager'].includes(authenticated_user.role)" class="flex flex-row w-1/3 justify-around rounded-2xl bg-[#161717]">
         <div class="flex flex-col gap-2 w-3/4 justify-center">
           <input
               type="text"
@@ -106,22 +120,34 @@
               class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent appearance-none dark:text-gray-400 dark:border-gray-500 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
           />
 
-          <ul v-if="visibleResults && this.users.length > 0" class="text-gray-400 flex flex-col rounded text-sm absolute top-14 bg-[#161717] border-gray-600">
-              <button class="p-2 hover:bg-zinc-50 hover:text-zinc-900 text-start" v-for="(result, index) in searchResults" :key="index" @click="setSelectedUser(result)">{{ result.username }}</button>
+          <ul v-if="visibleResults && this.users.length > 0"
+              class="text-gray-400 flex flex-col rounded text-sm absolute top-14 bg-[#161717] border-gray-600">
+            <button class="p-2 hover:bg-zinc-50 hover:text-zinc-900 text-start" v-for="(result, index) in searchResults"
+                    :key="index" @click="setSelectedUser(result)">{{ result.username }}
+            </button>
           </ul>
         </div>
         <button @click="redirectTo" class="text-white">
-          <svg class="w-4 h-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+          <svg class="w-4 h-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
           </svg>
         </button>
       </div>
-      <div class="flex flex-row w-1/4 justify-evenly items-center">
-        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_create')" type="button"><span class="material-symbols-outlined"> person_add </span></button>
-        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_update')" type="button"><span class="material-symbols-outlined"> manage_accounts </span></button>
-        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_delete')" type="button"><span class="material-symbols-outlined">person_remove</span></button>
+      <div v-if="['administrator', 'general_manager', 'manager'].includes(authenticated_user.role)" class="flex flex-row w-1/4 justify-evenly items-center">
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center"
+                @click="() => togglePopup('trigger_create')" type="button"><span class="material-symbols-outlined"> person_add </span>
+        </button>
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center"
+                @click="() => togglePopup('trigger_update')" type="button"><span class="material-symbols-outlined"> manage_accounts </span>
+        </button>
+        <button class="text-gray-300 bg-[#161717] rounded-full p-5 w-8 h-8 flex items-center justify-center"
+                @click="() => togglePopup('trigger_delete')" type="button"><span class="material-symbols-outlined">person_remove</span>
+        </button>
       </div>
-      <label for="toggleB" class="flex items-center cursor-pointer"></label>
+      <label v-if="['administrator', 'general_manager', 'manager'].includes(authenticated_user.role)" for="toggleB" class="flex items-center cursor-pointer"></label>
+      <Logout/>
     </div>
   </div>
 </template>
@@ -131,12 +157,15 @@ import PopupForm from "@/components/PopupForm.vue";
 import {users_service} from "@/services/users.service";
 import {computed, ref} from "vue";
 import {useStore} from "vuex";
+import {authentication_service} from "@/services/authentication.service";
+import Logout from "@/components/Authentication/Logout.vue";
 
 export default {
   name: "User",
   data() {
     return {
-      current_user: this,
+      authenticated_user: {},
+      current_user: undefined,
       selected_user: {},
       user_form_info: {},
       users: [],
@@ -156,17 +185,12 @@ export default {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
     }
 
-    const store = useStore();
-
-    const authenticatedUser = store.getters.getUser;
-
     return {
-      authenticatedUser,
       popupTriggers,
       togglePopup
     }
   },
-  components: {PopupForm},
+  components: {Logout, PopupForm},
   methods: {
     async redirectTo() {
       if (this.$route.fullPath === "/dashboard") {
@@ -185,6 +209,7 @@ export default {
       const response = await users_service.create_user(
           this.user_form_info.username,
           this.user_form_info.email,
+          this.user_form_info.password,
           this.user_form_info.role,
       );
 
@@ -248,20 +273,31 @@ export default {
     },
   },
   async mounted() {
-    document.addEventListener('click', this.handleClickOutside);
+    this.authenticated_user = JSON.parse(authentication_service.get_user());
 
-    const user_id = this.$route.params.userID;
+    if (this.authenticated_user.role !== "employee") {
 
-    await users_service.get_user_by_id(
-        user_id
-    ).then(response => {
-      this.current_user = response.data
-    }).catch(() => {
-    });
+      document.addEventListener('click', this.handleClickOutside);
 
-    await users_service.get_all_users().then(response => {
-      this.users = response.data;
-    });
+      const user_id = this.$route.params.userID;
+
+      if (!isNaN(parseInt(user_id))) {
+        await users_service.get_user_by_id(
+            user_id
+        ).then(response => {
+          this.current_user = response.data
+        }).catch(() => {
+        });
+      } else {
+        this.$router.push("/")
+      }
+
+      if (this.authenticated_user.role !== "employee") {
+        await users_service.get_all_users().then(response => {
+          this.users = response.data;
+        });
+      }
+    }
   },
 }
 </script>

@@ -1,5 +1,4 @@
 import Axios from "@/services/api.service";
-import {users_service} from "@/services/users.service";
 
 const workingtimes_url = "/workingtimes";
 
@@ -8,7 +7,7 @@ const get_working_times_by_id = async (user_id) => {
         const response = await Axios.get(`${workingtimes_url}/${user_id}`);
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -23,7 +22,7 @@ const get_all_working_times = async () => {
         const response = await Axios.get(`${workingtimes_url}/`);
         return {
             status_code: response,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -47,7 +46,7 @@ const update_working_time = async (working_time_id, start_time, end_time, status
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -64,7 +63,7 @@ const delete_working_time = async (working_time_id) => {
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -88,7 +87,7 @@ const create_working_time = async (user_id, start_time, end_time, status) => {
         );
         return {
             status_code: response.status,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
