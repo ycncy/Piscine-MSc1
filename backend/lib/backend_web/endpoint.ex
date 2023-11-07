@@ -11,7 +11,7 @@ defmodule BackendWeb.Endpoint do
     same_site: "Lax"
   ]
 
-  plug CORSPlug, origin: "http://34.155.108.18:8080", methods: [:get, :post, :put, :delete], headers: ["authorization", "content-type"]
+  plug CORSPlug, origin: "http://34.155.108.18:8080", methods: ["get", "post", "put", "delete"], headers: ["authorization", "content-type"]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
