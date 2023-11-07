@@ -70,7 +70,7 @@ defmodule BackendWeb.UserController do
     password = Map.get(user_params, "password")
     role = Map.get(user_params,"role")
 
-    if (username == "" || email == "" || password == "" || (role != "employee" && role != "manager" && role != "general_manager") ) do
+    if (username == "" || email == "" || password == "" || (role != "employee" && role != "manager" && role != "general_manager" && role != "administrator") ) do
       conn
       |> put_status(422)
       |> json(%{error: "invalid data"})
