@@ -47,6 +47,6 @@ defmodule BackendWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug, origin: ["http://localhost:8080"], headers: ["Authorization", "Content-Type", "Accept"]
+  plug CORSPlug, origin: ["http://localhost:8080", "http://34.155.108.18:8080"], headers: ["Authorization", "Content-Type", "Accept"]
   plug BackendWeb.Router
 end

@@ -18,7 +18,7 @@ config :backend, BackendWeb.CSRFProtectionPlug,
 # Configures the endpoint
 config :backend, BackendWeb.Endpoint,
        cors: [
-         origins: ["http://localhost:8080", "*"],
+         origins: ["http://localhost:8080", "http://34.155.108.18:8080"],
          credentials: true
        ],
        url: [host: "localhost"],
