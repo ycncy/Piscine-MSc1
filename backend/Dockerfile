@@ -1,4 +1,4 @@
-FROM elixir:alpine
+FROM elixir:latest
 
 WORKDIR /backend-app
 
