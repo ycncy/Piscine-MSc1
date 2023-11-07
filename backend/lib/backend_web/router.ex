@@ -2,13 +2,11 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
 
   pipeline :api do
-    plug BackendWeb.CorsMiddleware
     plug :accepts, ["json"]
   end
 
   pipeline :admin do
     plug BackendWeb.AdminPlug
-    plug BackendWeb.CorsMiddleware
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -17,7 +15,6 @@ defmodule BackendWeb.Router do
 
   pipeline :general_manager do
     plug BackendWeb.GeneralManagerPlug
-    plug BackendWeb.CorsMiddleware
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -26,7 +23,6 @@ defmodule BackendWeb.Router do
 
   pipeline :manager do
     plug BackendWeb.ManagerPlug
-    plug BackendWeb.CorsMiddleware
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -35,7 +31,6 @@ defmodule BackendWeb.Router do
 
   pipeline :default do
     plug BackendWeb.DefaultPlug
-    plug BackendWeb.CorsMiddleware
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
