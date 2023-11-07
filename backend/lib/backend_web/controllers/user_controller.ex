@@ -46,35 +46,51 @@ defmodule BackendWeb.UserController do
     username = Map.get(user_params, "username")
     email = Map.get(user_params, "email")
 
-    case Repo.get_by(User, username: username, email: email) do
-      nil ->
-        conn
-        |> put_status(404)
-        |> json(%{error: "NoResultError", message: "No user found for credentials"})
-      user ->
-        conn
-        |> put_status(200)
-        |> json(user)
+    if(username==nil || email == nil)do
+      send_resp(conn,400,Poison.encode!(%{error: "Bad arguments", message: "Argument email or username unspecified"}))
+    else
+      case Repo.get_by(User, username: username, email: email) do
+        nil ->
+          conn
+          |> put_status(404)
+          |> json(%{error: "NoResultError", message: "No user found for credentials"})
+        user ->
+          conn
+          |> put_status(200)
+          |> json(user)
+      end
     end
   end
 
   def create_user(conn, %{"user" => user_params}) do
     user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
 
-    case Users.create_user(user_params) do
-      {:ok, %User{} = user} ->
-        conn
-        |> put_status(201)
-        |> json(user)
+    username = Map.get(user_params,"username");
+    email = Map.get(user_params,"email")
+    password = Map.get(user_params, "password")
+    role = Map.get(user_params,"role")
 
-      {:error, %Ecto.ConstraintError{message: error_message}} ->
-        conn
-        |> put_status(403)
-        |> json(%{error: "ConstraintError", message: error_message})
-      _ ->
-        conn
-        |> put_status(500)
-        |> json(%{error: "InternalServerError", message: "Internal Server Error"})
+    if (username == "" || email == "" || password == "" || (role != "employee" && role != "manager" && role != "general_manager") ) do
+      conn
+      |> put_status(422)
+      |> json(%{error: "invalid data"})
+
+    else
+      case Users.create_user(user_params) do
+        {:ok, %User{} = user} ->
+          conn
+          |> put_status(:created)
+          |> render(:show, user: user)
+
+        {:error, %Ecto.ConstraintError{message: error_message}} ->
+          conn
+          |> put_status(403)
+          |> json(%{error: "ConstraintError", message: error_message})
+        _ ->
+          conn
+          |> put_status(500)
+          |> json(%{error: "InternalServerError", message: "Internal Server Error"})
+      end
     end
   end
 
@@ -138,5 +154,4 @@ defmodule BackendWeb.UserController do
         |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
     end
   end
-
 end

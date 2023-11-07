@@ -2,10 +2,8 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:alpine
     restart: always
-    ports:
-      - "5434:5434"
     volumes:
       - ./postgres-data:/var/lib/postgresql
     environment:
@@ -13,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_DATABASE: ${PGDATABASE}
     command:
-      - -p 5434
+      - -p ${PGPORT}
 
   backend:
     build:
