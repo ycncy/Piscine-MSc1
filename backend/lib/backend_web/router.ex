@@ -84,4 +84,26 @@ defmodule BackendWeb.Router do
     delete "/:id", WorkingTimeController, :delete_working_time
     post "/:userID", WorkingTimeController, :create_working_time
   end
+
+  defp valid_api_key(conn, _opts) do
+    key = System.get_env("ADMINKEY")
+    case hd(get_req_header(conn, "api-key")) do
+      ^key ->
+        conn
+      _ ->
+        conn
+        |> put_status(403)
+        |> json(%{error: "Forbidden"})
+    end
+  end
+
+  pipeline :api_key_required do
+    plug :valid_api_key
+  end
+
+  scope "/api/protected", BackendWeb do
+    pipe_through :api_key_required
+
+    post "/create", UserController, :create_user
+  end
 end

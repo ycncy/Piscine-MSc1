@@ -7,8 +7,6 @@
 # General application configuration
 import Config
 
-config :bcrypt_elixir, log_rounds: 4
-
 config :backend,
        ecto_repos: [Backend.Repo],
        generators: [timestamp_type: :utc_datetime]

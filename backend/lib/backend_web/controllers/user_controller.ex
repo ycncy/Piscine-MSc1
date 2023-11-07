@@ -79,8 +79,8 @@ defmodule BackendWeb.UserController do
       case Users.create_user(user_params) do
         {:ok, %User{} = user} ->
           conn
-          |> put_status(:created)
-          |> render(:show, user: user)
+          |> put_status(201)
+          |> json(user)
 
         {:error, %Ecto.ConstraintError{message: error_message}} ->
           conn
