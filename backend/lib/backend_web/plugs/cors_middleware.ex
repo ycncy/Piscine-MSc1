@@ -7,7 +7,6 @@ defmodule BackendWeb.CorsMiddleware do
       conn
       |> put_resp_header("access-control-allow-origin", "http://34.155.108.18:8080")
       |> put_resp_header("access-control-allow-methods", "GET, POST, PUT, DELETE")
-      |> put_resp_header("access-control-allow-headers", "authorization")
-      |> put_resp_header("access-control-max-age", "3600")
+      |> put_resp_header("access-control-allow-headers", "authorization, content-type")
     end
 end
