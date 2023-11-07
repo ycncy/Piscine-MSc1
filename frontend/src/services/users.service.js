@@ -5,7 +5,7 @@ const users_url = "/users";
 const get_all_users = async () => {
     try {
         const response = await Axios.get(
-            `${users_url}/all`
+            `${users_url}/admin/all`
         );
 
         return {

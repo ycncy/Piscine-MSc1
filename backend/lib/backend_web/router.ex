@@ -56,7 +56,7 @@ defmodule BackendWeb.Router do
     get "/", UserController, :get_user_by_credentials
 
     pipe_through :general_manager
-    get "/all", UserController, :get_all
+    get "/admin/all", UserController, :get_all
     put "/:userID", UserController, :update_user
     delete "/:userID", UserController, :delete_user
     post "/delete", UserController, :delete_all_users
