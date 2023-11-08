@@ -2,11 +2,14 @@ defmodule BackendWeb.ClockController do
   use BackendWeb, :controller
 
   import Ecto.Query
-  import BackendWeb.WorkingTimeController
+  require Logger
   alias Backend.Repo
   alias Backend.Clocks
   alias Backend.Users.User
   alias Backend.Clocks.Clock
+  alias Backend.WorkingTimes
+  alias Backend.WorkingTimes.WorkingTime
+  alias Time
 
   action_fallback(BackendWeb.FallbackController)
 
@@ -73,51 +76,59 @@ defmodule BackendWeb.ClockController do
     end
   end
 
-  def check_clock(conn, %{"id" => id, "clock" => clock_params})
-    status = Map.get(conn.clock_params, "status")
-    time = Map.get(conn.clock_params, "time")
+  def check_clock(conn, %{"id" => id, "clock" => clock_params}) do
+    status = Map.get(clock_params, "status")
+    time = Map.get(clock_params, "time")
     compareValue = true
     case status do
-     ^compareValue ->
-      case Integer.parse(id) do
-        {id_int, ""} ->
-          clock = Repo.get_by(Clock, user_id: id_int)
-          case clock do
-            nil ->
-              clock_params = Map.merge(%{"user_id" => id}, conn.body_params["clock"])
-              with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock_params) do
-                conn
-                |> put_status(:created)
-                |> render(:show, clock: clock)
-              end
+      ^compareValue ->
+        case Integer.parse(id) do
+          {id_int, ""} ->
+            clock = Repo.get_by(Clock, user_id: id_int)
+            case clock do
+              nil ->
+                clock_params = Map.merge(%{"user_id" => id}, conn.body_params["clock"])
+                with {:ok, %Clock{} = clock} <- Clocks.create_clock(clock_params) do
+                  conn
+                  |> put_status(:created)
+                  |> render(:show, clock: clock)
+                end
 
-            _ ->
-              with {:ok, %Clock{} = clock} <- Clocks.update_clock(clock, clock_params) do
-                render(conn, :show, clock: clock)
-              end
-          end
-        :error ->
-          send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
-      end
+              _ ->
+                clock_params = Map.merge(%{"user_id" => id}, conn.body_params["clock"])
+                with {:ok, %Clock{} = clock} <- Clocks.update_clock(clock, clock_params) do
+                  render(conn, :show, clock: clock)
+                end
+            end
+          :error ->
+            send_resp(conn, 400, Poison.encode!(%{error: "InvalidUserID", message: "Invalid user ID format"}))
+        end
       _ ->
         case Integer.parse(id) do
           {id_int, ""} ->
-          query = from(x in Clock, where: x.id == ^id_int)
-          case Repo.all(query) do
-            [] ->
-              send_resp(conn, 404, Poison.encode!(%{error: "ClocksNotFound", message: "No clocks found for the user"}))
-            clocks ->
-              start_time = Enum.map(clocks, &(&1.time))
-              params = Map.merge(%{"user_id" => id_int, "start_time" => start_time, "end_time" => time, "status" => "true"}, conn.body_params["working_time"])
-              create_working_time = WorkingTimeController.create_working_time(params)
+            clock = Repo.get_by(Clock, user_id: id_int)
+            case clock do
+              nil ->
+                send_resp(conn, 404, Poison.encode!(%{error: "ClocksNotFound", message: "No clocks found for the user"}))
+              clocks ->
+              start_time = clocks.time
+              {:ok, time} = NaiveDateTime.from_iso8601(time)
+                IO.inspect(time)
+                IO.inspect(start_time)
+                working_time_params = %Backend.WorkingTimes.WorkingTime{
+                status: true,
+                start_time: start_time,
+                end_time: NaiveDateTime.truncate(time,:second),
+                user_id: id_int
+              }
+              Backend.Repo.insert(working_time_params)
+              clock_params = Map.merge(%{"user_id" => id}, conn.body_params["clock"])
               with {:ok, %Clock{} = clock} <- Clocks.update_clock(clock, clock_params) do
                 render(conn, :show, clock: clock)
               end
-          end
+            end
         end
-      end
     end
   end
-
 
 end
