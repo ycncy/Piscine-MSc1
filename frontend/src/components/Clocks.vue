@@ -3,7 +3,7 @@
   <div class="p-4 m-auto gap-4 justify-center items-center h-full w-[90%]">
     <div class="p-8 rounded-3xl flex flex-col gap-16 shadow-md h-full bg-white border border-blue">
       <div class="flex flex-row justify-around">
-        <button class="ui button big" :class="[isActive ? 'green' : 'red']" @click="toggle">{{isActive ? 'ON' : 'OFF'}}</button>
+        <button class="ui button big" :class="{ green: isActive, red: !isActive }" @click="toggle">{{isActive ? 'ON' : 'OFF'}}</button>
       </div>
     </div>
   </div>
@@ -19,7 +19,8 @@ import {working_time_service} from "@/services/workingtimes.service";
     export default {
           data() {
         return {
-          isActive: false,
+          isActive: localStorage.getItem('isActive') === 'true' || false,
+          // isActive: false,
           clocks: [],
           current_user: undefined
         };
@@ -92,20 +93,19 @@ import {working_time_service} from "@/services/workingtimes.service";
         },
         async toggle() {
           this.isActive = this.isActive ? false : true;
+          localStorage.setItem('isActive', this.isActive);
           const check_clock = await clocks_service.check_clock(this.$route.params.userID, this.isActive,new Date())
 
-          // const get_clocks = await clocks_service.get_clock_by_user_id(
-          //   this.$route.params.userID
-          // );
-          // switch (get_clocks.status_code) {
-          //   case 200:
-          //   this.registerClocks(this.isActive,get_clocks.data.length);
-          //     break;
-          //   case 404:
-          //   this.registerClocks(this.isActive,0);
-          // }
-
         },
+        async getClock_status() {
+          const response = await clocks_service.get_clock_by_user_id(
+            this.$route.params.userID
+            );
+            console.log(response)
+            const status = response.data[0].status
+            this.isActive = status
+        },
+
         startDateTimer() {
           this.timer = setInterval(() => {
             this.date = new Date();
@@ -116,10 +116,39 @@ import {working_time_service} from "@/services/workingtimes.service";
         },
         refresh() {
           this.date = new Date();
+          console.log("refresh")
         },
         clocks() {
           this.$router.push({ name: "Clocks" });
         },
         },
+        created() {
+          this.getClock_status();
+        },
+        mounted() {
+          this.getClock_status();
+        }
     }
 </script>
+<style>
+
+.ui {
+  width: 100px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.green {
+  background-color: green; /* Change to your desired "on" color */
+  color: white;
+}
+
+.red {
+  background-color: red; /* Change to your desired "off" color */
+  color: white;
+}
+</style>
