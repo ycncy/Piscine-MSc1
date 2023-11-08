@@ -72,6 +72,8 @@ defmodule BackendWeb.Router do
 
     get "/:userID", ClockController, :get_clocks_by_userId
     post "/:userID", ClockController, :create_clocking_time
+    post "/check_clock/:id", ClockController, :check_clock
+    put "/:id", ClockController, :update_clock
   end
 
   scope "/api/workingtimes", BackendWeb do
