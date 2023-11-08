@@ -15,7 +15,6 @@ defmodule Backend.WorkingTimesFixtures do
       |> Enum.into(%{
         end_time: ~N[2023-10-23 07:55:00],
         start_time: ~N[2023-10-23 07:55:00],
-        status: true,
         user_id: id
       })
       |> Backend.WorkingTimes.create_working_time()

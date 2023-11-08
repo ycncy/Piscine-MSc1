@@ -2,13 +2,13 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
 
   pipeline :api do
-    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
+    plug CORSPlug, origin: "http://localhost:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
   end
 
   pipeline :admin do
     plug BackendWeb.AdminPlug
-    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
+    plug CORSPlug, origin: "http://localhost:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -17,7 +17,7 @@ defmodule BackendWeb.Router do
 
   pipeline :general_manager do
     plug BackendWeb.GeneralManagerPlug
-    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
+    plug CORSPlug, origin: "http://localhost:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -26,7 +26,7 @@ defmodule BackendWeb.Router do
 
   pipeline :manager do
     plug BackendWeb.ManagerPlug
-    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
+    plug CORSPlug, origin: "http://localhost:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -35,7 +35,7 @@ defmodule BackendWeb.Router do
 
   pipeline :default do
     plug BackendWeb.DefaultPlug
-    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
+    plug CORSPlug, origin: "http://localhost:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -93,7 +93,7 @@ defmodule BackendWeb.Router do
       _ ->
         conn
         |> put_status(403)
-        |> json(%{error: "Forbidden"})
+        |> json(%{error: "errors:{error:Forbidden}"})
     end
   end
 

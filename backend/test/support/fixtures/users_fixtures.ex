@@ -13,7 +13,21 @@ defmodule Backend.UsersFixtures do
       |> Enum.into(%{
         email: "some@mail.com",
         username: "someusername",
+        password: "somepassword",
         role: "employee"
+      })
+      |> Backend.Users.create_user()
+
+    user
+  end
+  def admin_fixture(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> Enum.into(%{
+        email: "administrator@timemanager.com",
+        username: "administrator",
+        password: Comeonin.Bcrypt.hashpwsalt("administrator"),
+        role: "administrator"
       })
       |> Backend.Users.create_user()
 

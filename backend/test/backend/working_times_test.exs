@@ -10,7 +10,7 @@ defmodule Backend.WorkingTimesTest do
     import Backend.UsersFixtures
     import Backend.WorkingTimesFixtures
 
-    @invalid_attrs %{start_time: nil, status: nil, end_time: nil}
+    @invalid_attrs %{start_time: nil, end_time: nil}
 
     test "list_working_times/0 returns all working_times" do
       user = user_fixture()
@@ -27,10 +27,9 @@ defmodule Backend.WorkingTimesTest do
     test "create_working_time/1 with valid data creates a working_time" do
       user = user_fixture()
 
-      valid_attrs = %{start_time: ~N[2023-10-23 07:55:00], status: true, end_time: ~N[2023-10-23 07:55:00],user_id: user.id}
+      valid_attrs = %{start_time: ~N[2023-10-23 07:55:00], end_time: ~N[2023-10-23 07:55:00],user_id: user.id}
       assert {:ok, %WorkingTime{} = working_time} = WorkingTimes.create_working_time(valid_attrs)
       assert working_time.start_time == ~N[2023-10-23 07:55:00]
-      assert working_time.status == true
       assert working_time.end_time == ~N[2023-10-23 07:55:00]
     end
 
@@ -41,11 +40,10 @@ defmodule Backend.WorkingTimesTest do
     test "update_working_time/2 with valid data updates the working_time" do
       user = user_fixture()
       working_time = working_time_fixture(user.id)
-      update_attrs = %{start_time: ~N[2023-10-24 07:55:00], status: false, end_time: ~N[2023-10-24 07:55:00]}
+      update_attrs = %{start_time: ~N[2023-10-24 07:55:00], end_time: ~N[2023-10-24 07:55:00]}
 
       assert {:ok, %WorkingTime{} = working_time} = WorkingTimes.update_working_time(working_time, update_attrs)
       assert working_time.start_time == ~N[2023-10-24 07:55:00]
-      assert working_time.status == false
       assert working_time.end_time == ~N[2023-10-24 07:55:00]
     end
 
