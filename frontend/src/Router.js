@@ -29,11 +29,6 @@ const routes = [
                         component: DashboardHome
                     },
                     {
-                        path: ':userID',
-                        component: DashboardHome,
-                        name: "Home"
-                    },
-                    {
                         path: 'workingTimes/:userID',
                         component: WorkingTimeEditor,
                         name: "WorkingTimes",

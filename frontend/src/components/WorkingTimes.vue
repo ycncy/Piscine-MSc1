@@ -126,7 +126,35 @@
         </form>
       </PopupForm>
     </div>
-    <FullCalendar :options="calendarOptions" ref="fullCalendar"/>
+    <div id="displayWorkingTime">
+      <PopupForm v-if="popupTriggers.trigger_display" :togglePopup="() => togglePopup('trigger_display')">
+        <form class="flex flex-col gap-2" @submit.prevent="updateWorkingTime" action="/frontend/public">
+          <div>
+            <label class="font-medium">Start time</label>
+            <input type="text" v-model="working_time_info.start_time" :placeholder="working_time_info.start_time"
+                   class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"/>
+          </div>
+          <div>
+            <label class="font-medium">End time</label>
+            <input type="text" v-model="working_time_info.end_time" :placeholder="working_time_info.end_time"
+                   class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"/>
+          </div>
+          <div class="flex gap-2">
+            <button type="submit"
+                    class="w-full px-4 py-2 text-white font-medium bg-[#161717] hover:bg-gray-600 active:bg-indigo-600 rounded-lg duration-150">
+              Update
+            </button>
+            <button @click="confirmDelete"
+                    class="w-full px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg duration-150">
+              Delete
+            </button>
+          </div>
+        </form>
+      </PopupForm>
+    </div>
+    <div class="flex justify-center">
+      <FullCalendar class="w-3/4 border rounded-lg bg-white p-6" :options="calendarOptions" ref="fullCalendar"/>
+    </div>
   </div>
 </template>
 
@@ -141,12 +169,9 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
-import {ref} from "vue"
-import {useStore} from "vuex";
 import {authentication_service} from "@/services/authentication.service";
+import {ref} from "vue"
 import Loader from "@/components/Loader.vue";
-
-const id = ref(10)
 
 export default {
   name: "WorkingTimes",
@@ -160,6 +185,8 @@ export default {
       working_time_info: {
         status: false
       },
+      selectedWorkingTime: null,
+
       calendarOptions: {
         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
@@ -171,6 +198,22 @@ export default {
         editable: true,
         selectable: true,
         weekends: true,
+        select: (arg) => {
+          const workingtime = {
+            start_time: moment(new Date(arg.start)).format('YYYY-MM-DDTHH:mm:ss'),
+            end_time: moment(new Date(arg.end)).format('YYYY-MM-DDTHH:mm:ss'),
+          }
+          this.toggleCreateWorkingTime(workingtime)
+        },
+        eventClick: (arg) => {
+          this.selectedWorkingTime = {
+            id: arg.event.id,
+            start_time: moment(new Date(arg.event.start)).format('YYYY-MM-DDTHH:mm:ss'),
+            end_time: moment(new Date(arg.event.end)).format('YYYY-MM-DDTHH:mm:ss'),
+
+          }
+          this.toggleDisplayWorkingTime(this.selectedWorkingTime);
+        }
       },
     }
   },
@@ -178,42 +221,19 @@ export default {
     const popupTriggers = ref({
       trigger_update: false,
       trigger_delete: false,
-      trigger_create: false
+      trigger_create: false,
+      trigger_display: false
     });
 
     const togglePopup = (trigger) => {
       popupTriggers.value[trigger] = !popupTriggers.value[trigger];
     }
-
     return {
       popupTriggers,
       togglePopup
     }
   },
   methods: {
-    getWorkingtimes: async function () {
-      const user_id = this.$route.params.userID;
-
-      if (!isNaN(parseInt(user_id))) {
-        await users_service.get_user_by_id(user_id).then((response) => {
-          this.current_user = response.data
-        })
-
-        working_time_service.get_working_times_by_id(user_id).then((result) => {
-          this.workingtimes = result.data;
-
-          for (const workingTime of this.workingtimes) {
-            this.$refs.fullCalendar.getApi().addEvent({
-              id: workingTime.id,
-              title: 'Working Time',
-              start: workingTime.start_time,
-              end: workingTime.end_time,
-              allDay: false,
-            });
-          }
-        });
-      }
-    },
     formatDateTime(dateTime) {
       return moment(new Date(dateTime)).format('MMMM Do YYYY, h:mm');
     },
@@ -224,6 +244,14 @@ export default {
     toggleDeleteWorkingTime(working_time) {
       this.working_time_info = Object.assign({}, working_time);
       this.togglePopup('trigger_delete');
+    },
+    toggleDisplayWorkingTime(working_time) {
+      this.working_time_info = Object.assign({}, working_time);
+      this.togglePopup('trigger_display');
+    },
+    toggleCreateWorkingTime(working_time) {
+      this.working_time_info = Object.assign({}, working_time);
+      this.togglePopup('trigger_create');
     },
     async updateWorkingTime() {
       const response = await working_time_service.update_working_time(
@@ -252,9 +280,15 @@ export default {
           this.togglePopup('trigger_delete');
           window.location.reload()
           break;
-        case 403:
-          this.error = "Working_time already exists";
+        case 500:
+          this.togglePopup('trigger_delete');
+          window.location.reload()
+          break;
       }
+    },
+    async confirmDelete() {
+      this.togglePopup('trigger_delete');
+      this.togglePopup('trigger_display')
     },
     async createWorkingTime() {
       const response = await working_time_service.create_working_time(
@@ -272,7 +306,7 @@ export default {
         case 403:
           this.error = "Working_time already exists";
       }
-    }
+    },
   },
   async mounted() {
     this.authenticated_user = JSON.parse(authentication_service.get_user())
@@ -283,6 +317,9 @@ export default {
       await users_service.get_user_by_id(user_id)
           .then((response) => {
             this.current_user = response.data
+          })
+          .catch(() => {
+            this.$router.push("/")
           });
 
       await working_time_service.get_working_times_by_id(user_id)
@@ -291,8 +328,38 @@ export default {
           });
     }
   },
-  created() {
-    this.getWorkingtimes();
+  async created() {
+    const user_id = this.$route.params.userID;
+
+    if (!isNaN(parseInt(user_id))) {
+      await users_service.get_user_by_id(user_id).then((response) => {
+        if (response.status_code === 404) {
+          this.$router.push("/")
+        } else {
+          this.current_user = response.data
+        }
+      }).catch(() => {
+        this.$router.push("/")
+      });
+
+      working_time_service.get_working_times_by_id(user_id).then((result) => {
+        this.workingtimes = result.data;
+
+        console.log(this.$refs)
+
+        for (const workingTime of this.workingtimes) {
+          this.$refs.fullCalendar.getApi().addEvent({
+            id: workingTime.id,
+            title: 'Working Time',
+            start: workingTime.start_time,
+            end: workingTime.end_time,
+            allDay: false,
+          });
+        }
+      });
+    } else {
+      this.$router.push("/")
+    }
   },
 };
 </script>

@@ -13,9 +13,6 @@ const get_all_users = async () => {
             data: response.data
         }
     } catch (error) {
-
-
-        console.log(error)
         return {
             status_code: error.response.status,
             error: error.message

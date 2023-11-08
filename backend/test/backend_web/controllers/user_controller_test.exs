@@ -2,7 +2,6 @@ defmodule BackendWeb.UserControllerTest do
   use BackendWeb.ConnCase
   import Plug.Conn
   import Backend.UsersFixtures
-  import Backend.AuthFixtures
   alias Backend.Users.User
   @auth %{
     email: "administrator@timemanager.com",

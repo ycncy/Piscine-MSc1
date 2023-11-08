@@ -146,8 +146,10 @@
                 @click="() => togglePopup('trigger_delete')" type="button"><span class="material-symbols-outlined">person_remove</span>
         </button>
       </div>
-      <label v-if="['administrator', 'general_manager', 'manager'].includes(authenticated_user.role)" for="toggleB" class="flex items-center cursor-pointer"></label>
-      <Logout/>
+      <div class="flex flex-row gap-2 justify-evenly items-center">
+        <Clocks/>
+        <Logout/>
+      </div>
     </div>
   </div>
 </template>
@@ -155,10 +157,10 @@
 <script>
 import PopupForm from "@/components/PopupForm.vue";
 import {users_service} from "@/services/users.service";
-import {computed, ref} from "vue";
-import {useStore} from "vuex";
+import {ref} from "vue";
 import {authentication_service} from "@/services/authentication.service";
 import Logout from "@/components/Authentication/Logout.vue";
+import Clocks from "@/components/Clocks.vue";
 
 export default {
   name: "User",
@@ -190,7 +192,7 @@ export default {
       togglePopup
     }
   },
-  components: {Logout, PopupForm},
+  components: {Clocks, Logout, PopupForm},
   methods: {
     async redirectTo() {
       if (this.$route.fullPath === "/dashboard") {
@@ -226,7 +228,7 @@ export default {
       }
     },
     async updateUser() {
-      const user_parsed = JSON.parse(this.selected_user)
+      const user_parsed = this.current_user;
       const response = await users_service.update_user(
           user_parsed.id,
           this.user_form_info.username,
@@ -250,6 +252,10 @@ export default {
 
       switch (response.status_code) {
         case 204:
+          this.togglePopup('trigger_delete');
+          window.location.reload()
+          break;
+        case 500:
           this.togglePopup('trigger_delete');
           window.location.reload()
           break;
@@ -285,8 +291,13 @@ export default {
         await users_service.get_user_by_id(
             user_id
         ).then(response => {
-          this.current_user = response.data
+          if (response.status_code === 404) {
+            this.$router.push("/")
+          } else {
+            this.current_user = response.data
+          }
         }).catch(() => {
+          this.$router.push("/")
         });
       } else {
         this.$router.push("/")
@@ -295,10 +306,7 @@ export default {
       if (this.authenticated_user.role !== "employee") {
         await users_service.get_all_users().then(response => {
           this.users = response.data;
-        }).catch(response => {
-
-          console.log(response)
-        });
+        }).catch(() => {})
       }
     }
   },
