@@ -38,6 +38,11 @@ export default {
     }
   },
   components: {Line, Bar, Pie, Radar},
+  created() {
+    const user_id = this.$route.params.userID;
+
+    if (isNaN(parseInt(user_id))) this.$router.push("/")
+  },
   async mounted() {
     const user_id = this.$route.params.userID;
     
