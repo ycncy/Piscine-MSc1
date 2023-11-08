@@ -39,7 +39,10 @@ export default {
   },
   components: {Line, Bar, Pie, Radar},
   async mounted() {
-    let data = await working_time_service.get_working_times_by_id(this.$route.params.userID);
+    const user_id = this.$route.params.userID;
+    
+    if (!isNaN(parseInt(user_id))) {
+    let data = await working_time_service.get_working_times_by_id(user_id);
     let time = [];
     const minimum_time = 8
     let overtime = 0, normaltime = 0, undertime = 0
@@ -58,7 +61,9 @@ export default {
         normaltime += time[index];
         undertime += minimum_time - time[index];
       }
-
+      else {
+        this.$router.push("/")
+      }
     }
     this.user_working_times = [
       {
@@ -76,6 +81,7 @@ export default {
       }
     ]
     this.percent_label = ['normal time', 'overtime', 'undertime']
+  }
   },
   methods: {
     showChart(chartType) {
