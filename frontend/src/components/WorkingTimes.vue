@@ -229,8 +229,10 @@ export default {
           this.togglePopup('trigger_delete');
           window.location.reload()
           break;
-        case 403:
-          this.error = "Working_time already exists";
+        case 500:
+          this.togglePopup('trigger_delete');
+          window.location.reload()
+          break;
       }
     },
     async createWorkingTime() {

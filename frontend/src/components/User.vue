@@ -253,6 +253,10 @@ export default {
           this.togglePopup('trigger_delete');
           window.location.reload()
           break;
+        case 500:
+          this.togglePopup('trigger_delete');
+          window.location.reload()
+          break;
       }
     },
     searchUsers() {
