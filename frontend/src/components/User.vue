@@ -226,7 +226,7 @@ export default {
       }
     },
     async updateUser() {
-      const user_parsed = JSON.parse(this.selected_user)
+      const user_parsed = this.current_user;
       const response = await users_service.update_user(
           user_parsed.id,
           this.user_form_info.username,

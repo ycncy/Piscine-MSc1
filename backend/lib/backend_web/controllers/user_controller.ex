@@ -99,7 +99,9 @@ defmodule BackendWeb.UserController do
       {user_id_int, _} ->
         case Users.get_user!(user_id_int) do
           %User{} = user ->
-            user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
+            if (Map.get(user_params, "password")) do
+              user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
+            end
             case Users.update_user(user, user_params) do
               {:ok, %User{} = updated_user} ->
                 conn
