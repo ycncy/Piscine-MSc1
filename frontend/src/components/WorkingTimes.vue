@@ -191,29 +191,6 @@ export default {
     }
   },
   methods: {
-    getWorkingtimes: async function () {
-      const user_id = this.$route.params.userID;
-
-      if (!isNaN(parseInt(user_id))) {
-        await users_service.get_user_by_id(user_id).then((response) => {
-          this.current_user = response.data
-        })
-
-        working_time_service.get_working_times_by_id(user_id).then((result) => {
-          this.workingtimes = result.data;
-
-          for (const workingTime of this.workingtimes) {
-            this.$refs.fullCalendar.getApi().addEvent({
-              id: workingTime.id,
-              title: 'Working Time',
-              start: workingTime.start_time,
-              end: workingTime.end_time,
-              allDay: false,
-            });
-          }
-        });
-      }
-    },
     formatDateTime(dateTime) {
       return moment(new Date(dateTime)).format('MMMM Do YYYY, h:mm');
     },
@@ -283,6 +260,9 @@ export default {
       await users_service.get_user_by_id(user_id)
           .then((response) => {
             this.current_user = response.data
+          })
+          .catch(() => {
+            this.$router.push("/")
           });
 
       await working_time_service.get_working_times_by_id(user_id)
@@ -291,8 +271,34 @@ export default {
           });
     }
   },
-  created() {
-    this.getWorkingtimes();
+  async created() {
+    const user_id = this.$route.params.userID;
+
+    if (!isNaN(parseInt(user_id))) {
+      await users_service.get_user_by_id(user_id).then((response) => {
+        if (response.status_code === 404) {
+          this.$router.push("/")
+        } else {
+          this.current_user = response.data
+        }
+      }).catch(() => {
+        this.$router.push("/")
+      });
+
+      working_time_service.get_working_times_by_id(user_id).then((result) => {
+        this.workingtimes = result.data;
+
+        for (const workingTime of this.workingtimes) {
+          this.$refs.fullCalendar.getApi().addEvent({
+            id: workingTime.id,
+            title: 'Working Time',
+            start: workingTime.start_time,
+            end: workingTime.end_time,
+            allDay: false,
+          });
+        }
+      });
+    }
   },
 };
 </script>

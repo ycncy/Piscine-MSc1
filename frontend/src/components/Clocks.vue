@@ -49,14 +49,12 @@ import {users_service} from "@/services/users.service";
 
           clocks_service.get_clock_by_user_id(this.$route.params.userID).then((result) => {
             this.clocks = result.data;
-            console.log('clocks',result.data);
           });
 
         },
         async toggle() {
           this.isActive = this.isActive ? false : true;
           if(this.isActive == true){
-            console.log("true");
             const response = await clocks_service.create_clocking_time(
               new Date(),
               this.$route.params.userID,
@@ -66,7 +64,6 @@ import {users_service} from "@/services/users.service";
             switch (response.status_code) {
               case 201:
                 this.getclocks();
-                console.log('success');
                 break;
               case 422:
                 this.error = "Non-valid email format";
@@ -75,7 +72,6 @@ import {users_service} from "@/services/users.service";
                 this.error = "User already exists";
             }
           }else{
-            console.log('false');
             const response = await clocks_service.create_clocking_time(
               new Date(),
               this.$route.params.userID,
@@ -85,7 +81,6 @@ import {users_service} from "@/services/users.service";
             switch (response.status_code) {
               case 201:
                 this.getclocks();
-                console.log('success');
                 break;
               case 422:
                 this.error = "Non-valid email format";
@@ -94,7 +89,6 @@ import {users_service} from "@/services/users.service";
                 this.error = "User already exists";
             }
           }
-          // console.log('isActive',this.isActive);
         },
         startDateTimer() {
           this.timer = setInterval(() => {

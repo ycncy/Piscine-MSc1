@@ -12,6 +12,7 @@
 import User from "@/components/User.vue";
 import Navbar from "@/components/Navbar.vue";
 import {authentication_service} from "@/services/authentication.service";
+import {users_service} from "@/services/users.service";
 
 export default {
   components: {
@@ -20,7 +21,7 @@ export default {
   },
   mounted() {
     if (!authentication_service.is_logged()) {
-      this.$router.push("/login");
+      this.$route.push("/login");
     }
   }
 };

@@ -285,8 +285,13 @@ export default {
         await users_service.get_user_by_id(
             user_id
         ).then(response => {
-          this.current_user = response.data
+          if (response.status_code === 404) {
+            this.$router.push("/")
+          } else {
+            this.current_user = response.data
+          }
         }).catch(() => {
+          this.$router.push("/")
         });
       } else {
         this.$router.push("/")
@@ -295,10 +300,7 @@ export default {
       if (this.authenticated_user.role !== "employee") {
         await users_service.get_all_users().then(response => {
           this.users = response.data;
-        }).catch(response => {
-
-          console.log(response)
-        });
+        }).catch(() => {})
       }
     }
   },

@@ -21,7 +21,6 @@ const login = async (email, password) => {
             data: response.data.data
         }
     } catch (error) {
-        console.log(error)
         return {
             status_code: error.response.status,
             error: error.response.data.reason

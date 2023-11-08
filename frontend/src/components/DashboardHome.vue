@@ -61,7 +61,9 @@ export default {
         await users_service.get_user_by_id(user_id).then(response => {
           if (response.status_code === 404) this.invalid_user = true
           if (response.status_code === 500) this.invalid_user = true
-          this.current_user = response.data;
+          else {
+            this.current_user = response.data;
+          }
         }).catch(() => {
         })
       }
