@@ -4,13 +4,13 @@
       <div class="items-start justify-between md:flex">
         <div>
           <h3 class="text-white font-bold text-2xl">
-            Working Times
+            Working Timesjhkbjhvhgf
           </h3>
         </div>
         <div>
           <button @click="toggleCreateWorkingTimeNew()"
                   class="inline-block px-4 py-2 text-white duration-150 font-medium bg-[#161717] rounded-lg hover:bg-gray-400 md:text-sm">
-            New Working Time
+            New Working Timebbnvhgcf
           </button>
         </div>
       </div>
@@ -141,7 +141,7 @@
         Update
       </button>
     </form>
-    <button @click="confirmDelete" class="mt-4 px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg duration-150">
+    <button @click="confirmDelete" class="w-full px-4 py-2 text-white font-medium bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg duration-150">
       Delete
     </button>
   </PopupForm>

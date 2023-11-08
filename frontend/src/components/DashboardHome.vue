@@ -1,18 +1,19 @@
 <template>
-  <div v-if="this.no_params" class="flex flex-col h-1/4 justify-center">
-    <h1 class="text-gray-400 text-4xl w-full h-1/4 flex justify-center items-center">
-      Welcome to Time Manager Dashboard !
+  <div v-if="this.no_params" class=" hidden sm:flex-col h-1/4 justify-center">
+    <h1 class="sm:hidden text-gray-400 text-4xl w-full h-1/4 flex justify-center items-center">
+      Welcome to Time Manager Dashboard
     </h1>
 
     <h2 class="text-gray-400 text-2xl w-full h-1/4 flex justify-center items-center">
       Please select a user with the search-bar to start using it.
     </h2>
   </div>
-  <div v-else class="flex flex-col h-1/4 justify-center items-center">
+
+  <div v-else class=" flex-col h-1/4 justify-center items-center">
     <h1 class="text-gray-400 text-3xl" v-if="this.current_user">You have selected user : {{ this.current_user.username }}</h1>
     <section v-else-if="!this.invalid_user" class="flex items-center h-1/2 bg-[#242424]">
       <div class="container flex flex-col items-center">
-        <div class="flex flex-col gap-6 text-center">
+        <div class="hidden sm:flex flex-col gap-6 text-center">
           <h2 class="font-extrabold text-9xl text-gray-400">
             <span class="sr-only">Error</span>404
           </h2>
