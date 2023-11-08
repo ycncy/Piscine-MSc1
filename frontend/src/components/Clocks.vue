@@ -26,71 +26,71 @@ import {working_time_service} from "@/services/workingtimes.service";
         };
       },
       methods: {
-        async registerClocks(isActive,get_clocks){
-          if(isActive == true){
-            if(get_clocks == 0){
-              const response = await clocks_service.create_clocking_time(
-                new Date(),
-                this.$route.params.userID,
-                true
-              );
-              switch (response.status_code) {
-                case 201:
-                  console.log('success');
-                  break;
-                case 422:
-                  this.error = "Error";
-                  break;
-                case 403:
-                  this.error = "Error";
-              }
-            }else{
-              const retour = await clocks_service.update_clock(
-                this.$route.params.userID,
-                new Date(),
-                true
-              )
-              switch (retour.status_code) {
-                case 200:
-                  console.log('success');
-                  break;
-                case 403:
-                  this.error = "Update failed";
-              }
-            }
+        // async registerClocks(isActive,get_clocks){
+        //   if(isActive == true){
+        //     if(get_clocks == 0){
+        //       const response = await clocks_service.create_clocking_time(
+        //         new Date(),
+        //         this.$route.params.userID,
+        //         true
+        //       );
+        //       switch (response.status_code) {
+        //         case 201:
+        //           console.log('success');
+        //           break;
+        //         case 422:
+        //           this.error = "Error";
+        //           break;
+        //         case 403:
+        //           this.error = "Error";
+        //       }
+        //     }else{
+        //       const retour = await clocks_service.update_clock(
+        //         this.$route.params.userID,
+        //         new Date(),
+        //         true
+        //       )
+        //       switch (retour.status_code) {
+        //         case 200:
+        //           console.log('success');
+        //           break;
+        //         case 403:
+        //           this.error = "Update failed";
+        //       }
+        //     }
             
-          }else{
-            const end_time = new Date();
-            const get_start_time = await clocks_service.get_clock_by_user_id(
-            this.$route.params.userID
-            );
-            const ret = working_time_service.create_working_time(
-                this.$route.params.userID,
-                get_start_time.data[0].time,
-                end_time,
-                true
-            );
-            switch (ret.status_code) {
-              case 201:
-                console.log('success')
-                break;
-              case 403:
-                this.error = "Working_time already exists";
-            }
-            const resp = await clocks_service.update_clock(
-                this.$route.params.userID,
-                end_time,
-                false
-              )
-              switch (resp.status_code) {
-                case 200:
-                  console.log('success');
-                  break;
-                case 403:
-                  this.error = "Update failed";
-              }
-          }
-        },
+        //   }else{
+        //     const end_time = new Date();
+        //     const get_start_time = await clocks_service.get_clock_by_user_id(
+        //     this.$route.params.userID
+        //     );
+        //     const ret = working_time_service.create_working_time(
+        //         this.$route.params.userID,
+        //         get_start_time.data[0].time,
+        //         end_time,
+        //         true
+        //     );
+        //     switch (ret.status_code) {
+        //       case 201:
+        //         console.log('success')
+        //         break;
+        //       case 403:
+        //         this.error = "Working_time already exists";
+        //     }
+        //     const resp = await clocks_service.update_clock(
+        //         this.$route.params.userID,
+        //         end_time,
+        //         false
+        //       )
+        //       switch (resp.status_code) {
+        //         case 200:
+        //           console.log('success');
+        //           break;
+        //         case 403:
+        //           this.error = "Update failed";
+        //       }
+        //   }
+        // },
         async toggle() {
           this.isActive = this.isActive ? false : true;
           localStorage.setItem('isActive', this.isActive);
