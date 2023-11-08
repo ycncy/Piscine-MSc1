@@ -146,8 +146,10 @@
                 @click="() => togglePopup('trigger_delete')" type="button"><span class="material-symbols-outlined">person_remove</span>
         </button>
       </div>
-      <label v-if="['administrator', 'general_manager', 'manager'].includes(authenticated_user.role)" for="toggleB" class="flex items-center cursor-pointer"></label>
-      <Logout/>
+      <div class="flex flex-row gap-2 justify-evenly items-center">
+        <Clocks/>
+        <Logout/>
+      </div>
     </div>
   </div>
 </template>
@@ -155,10 +157,10 @@
 <script>
 import PopupForm from "@/components/PopupForm.vue";
 import {users_service} from "@/services/users.service";
-import {computed, ref} from "vue";
-import {useStore} from "vuex";
+import {ref} from "vue";
 import {authentication_service} from "@/services/authentication.service";
 import Logout from "@/components/Authentication/Logout.vue";
+import Clocks from "@/components/Clocks.vue";
 
 export default {
   name: "User",
@@ -190,7 +192,7 @@ export default {
       togglePopup
     }
   },
-  components: {Logout, PopupForm},
+  components: {Clocks, Logout, PopupForm},
   methods: {
     async redirectTo() {
       if (this.$route.fullPath === "/dashboard") {

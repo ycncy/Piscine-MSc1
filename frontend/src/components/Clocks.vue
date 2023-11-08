@@ -1,134 +1,68 @@
 <template>
-
-  <div class="p-4 m-auto gap-4 justify-center items-center h-full w-[90%]">
-    <div class="p-8 rounded-3xl flex flex-col gap-16 shadow-md h-full bg-white border border-blue">
-      <div class="flex flex-row justify-around">
-        <button class="ui button big" :class="{ green: isActive, red: !isActive }" @click="toggle">{{isActive ? 'ON' : 'OFF'}}</button>
-      </div>
-    </div>
+  <div>
+    <button :class="{ green: isActive, red: !isActive }" class="rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="toggle">
+      {{ isActive ? 'ON' : 'OFF' }}
+    </button>
   </div>
 
 </template>
 
-<script >
+<script>
 import {clocks_service} from "@/services/clocks.service";
-import {users_service} from "@/services/users.service";
-import {working_time_service} from "@/services/workingtimes.service";
+import {authentication_service} from "@/services/authentication.service";
 
+export default {
+  name: "Clocks",
+  data() {
+    return {
+      isActive: localStorage.getItem('isActive') === 'true' || false,
+      // isActive: false,
+      clocks: [],
+      current_user: undefined
+    };
+  },
+  methods: {
+    async toggle() {
+      this.isActive = this.isActive ? false : true;
+      localStorage.setItem('isActive', this.isActive);
+      const check_clock = await clocks_service.check_clock(JSON.parse(authentication_service.get_user()).id, this.isActive, new Date());
 
-    export default {
-          data() {
-        return {
-          isActive: localStorage.getItem('isActive') === 'true' || false,
-          // isActive: false,
-          clocks: [],
-          current_user: undefined
-        };
-      },
-      methods: {
-        // async registerClocks(isActive,get_clocks){
-        //   if(isActive == true){
-        //     if(get_clocks == 0){
-        //       const response = await clocks_service.create_clocking_time(
-        //         new Date(),
-        //         this.$route.params.userID,
-        //         true
-        //       );
-        //       switch (response.status_code) {
-        //         case 201:
-        //           console.log('success');
-        //           break;
-        //         case 422:
-        //           this.error = "Error";
-        //           break;
-        //         case 403:
-        //           this.error = "Error";
-        //       }
-        //     }else{
-        //       const retour = await clocks_service.update_clock(
-        //         this.$route.params.userID,
-        //         new Date(),
-        //         true
-        //       )
-        //       switch (retour.status_code) {
-        //         case 200:
-        //           console.log('success');
-        //           break;
-        //         case 403:
-        //           this.error = "Update failed";
-        //       }
-        //     }
-            
-        //   }else{
-        //     const end_time = new Date();
-        //     const get_start_time = await clocks_service.get_clock_by_user_id(
-        //     this.$route.params.userID
-        //     );
-        //     const ret = working_time_service.create_working_time(
-        //         this.$route.params.userID,
-        //         get_start_time.data[0].time,
-        //         end_time,
-        //         true
-        //     );
-        //     switch (ret.status_code) {
-        //       case 201:
-        //         console.log('success')
-        //         break;
-        //       case 403:
-        //         this.error = "Working_time already exists";
-        //     }
-        //     const resp = await clocks_service.update_clock(
-        //         this.$route.params.userID,
-        //         end_time,
-        //         false
-        //       )
-        //       switch (resp.status_code) {
-        //         case 200:
-        //           console.log('success');
-        //           break;
-        //         case 403:
-        //           this.error = "Update failed";
-        //       }
-        //   }
-        // },
-        async toggle() {
-          this.isActive = this.isActive ? false : true;
-          localStorage.setItem('isActive', this.isActive);
-          const check_clock = await clocks_service.check_clock(this.$route.params.userID, this.isActive,new Date())
+      if (check_clock.status_code === 200) window.location.reload();
 
-        },
-        async getClock_status() {
-          const response = await clocks_service.get_clock_by_user_id(
-            this.$route.params.userID
-            );
-            console.log(response)
-            const status = response.data[0].status
-            this.isActive = status
-        },
+    },
+    async getClock_status() {
+      const response = await clocks_service.get_clock_by_user_id(
+          JSON.parse(authentication_service.get_user()).id
+      );
+      console.log(response)
+      const status = response.data[0].status
+      console.log(status)
+      this.isActive = status
+    },
 
-        startDateTimer() {
-          this.timer = setInterval(() => {
-            this.date = new Date();
-          }, 1000);
-        },
-        clockIn() {
-          this.startDateTimer();
-        },
-        refresh() {
-          this.date = new Date();
-          console.log("refresh")
-        },
-        clocks() {
-          this.$router.push({ name: "Clocks" });
-        },
-        },
-        created() {
-          this.getClock_status();
-        },
-        mounted() {
-          this.getClock_status();
-        }
-    }
+    startDateTimer() {
+      this.timer = setInterval(() => {
+        this.date = new Date();
+      }, 1000);
+    },
+    clockIn() {
+      this.startDateTimer();
+    },
+    refresh() {
+      this.date = new Date();
+      console.log("refresh")
+    },
+    clocks() {
+      this.$router.push({name: "Clocks"});
+    },
+  },
+  created() {
+    this.getClock_status();
+  },
+  mounted() {
+    this.getClock_status();
+  }
+}
 </script>
 <style>
 

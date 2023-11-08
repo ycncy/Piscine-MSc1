@@ -122,10 +122,7 @@ defmodule BackendWeb.ClockController do
               clocks ->
               start_time = clocks.time
               {:ok, time} = NaiveDateTime.from_iso8601(time)
-                IO.inspect(time)
-                IO.inspect(start_time)
                 working_time_params = %Backend.WorkingTimes.WorkingTime{
-                status: true,
                 start_time: start_time,
                 end_time: NaiveDateTime.truncate(time,:second),
                 user_id: id_int
