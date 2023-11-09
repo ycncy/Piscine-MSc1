@@ -43,7 +43,7 @@ jobs:
           if [ ! -d .git ]; then
             git init
           fi
-
+          echo "hi"
           # Set up the remote repository to point to your GitHub repository
           git remote add origin https://github.com/redhabouzidi/Time_Manager
 
