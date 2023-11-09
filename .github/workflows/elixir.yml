@@ -45,7 +45,7 @@ jobs:
           fi
 
           # Set up the remote repository to point to your GitHub repository
-          git remote add origin https://github.com/EpitechMscProPromo2025/T-POO-700-PAR_29
+          git remote add origin https://github.com/redhabouzidi/Time_Manager
 
           # Fetch and pull the latest changes from the GitHub repository
           git pull origin main
