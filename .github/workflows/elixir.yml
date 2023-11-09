@@ -34,8 +34,7 @@ jobs:
           mkdir ~/.ssh
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa.pub
           chmod 600 ~/.ssh/id_rsa.pub
-          ssh-add ~/.ssh/id_rsa.pub
-          ssh 34.155.108.18
+          ssh -i ~/.ssh/id_rsa.pub 34.155.108.18
 
           # Navigate to the project directory
           cd /virtual_machine
