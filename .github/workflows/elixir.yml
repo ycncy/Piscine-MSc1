@@ -33,10 +33,10 @@ jobs:
           # SSH into your Google Cloud VM
           mkdir ~/.ssh
           echo "${{ secrets.SECRET_PUB_SSH_KEY}}" > ~/.ssh/id_rsa.pub
-          chmod 888 ~/.ssh/id_rsa.pub
+          chmod 777 ~/.ssh/id_rsa.pub
           cat ~/.ssh/id_rsa.pub
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
-          chmod 888 ~/.ssh/id_rsa
+          chmod 777 ~/.ssh/id_rsa
           cat ~/.ssh/id_rsa.pub
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa.pub
