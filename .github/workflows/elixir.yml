@@ -36,6 +36,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa.pub
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
           ssh -i ~/.ssh/id_rsa.pub virtualmachine@34.155.108.18
 
           # Navigate to the project directory
