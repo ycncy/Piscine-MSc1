@@ -37,6 +37,7 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
           ssh 34.155.108.18
+          yes
 
           # Navigate to the project directory
           cd /virtual_machine
