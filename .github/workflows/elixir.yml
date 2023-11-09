@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +23,29 @@ jobs:
       - name: destroy the created build
         run: |
           docker-compose down
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Google Cloud VM
+        run: |
+          # SSH into your Google Cloud VM
+          ssh -i ./id_rsa.pub 34.155.108.18
+
+          # Navigate to the project directory
+          cd /virtual_machine
+
+          # Initialize a Git repository (if it doesn't exist)
+          if [ ! -d .git ]; then
+            git init
+          fi
+
+          # Set up the remote repository to point to your GitHub repository
+          git remote add origin https://github.com/EpitechMscProPromo2025/T-POO-700-PAR_29
+
+          # Fetch and pull the latest changes from the GitHub repository
+          git pull origin main
+          docker-compose up -d --build
+        env:
+          USER: ${{ secrets.SSH_USER }}
+          IP_ADDRESS: ${{ secrets.SERVER_IP }}
