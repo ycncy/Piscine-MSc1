@@ -34,7 +34,7 @@ jobs:
           mkdir ~/.ssh
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -i ~/.ssh/id_rsa 34.155.108.18
+          ssh -i ~/.ssh/id_rsa virtualmachine@34.155.108.18
 
           # Navigate to the project directory
           cd /virtual_machine
