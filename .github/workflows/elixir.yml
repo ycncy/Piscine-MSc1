@@ -30,7 +30,7 @@ jobs:
       - name: Deploy to Google Cloud VM
         run: |
           # SSH into your Google Cloud VM
-          ssh -i ./id_rsa.pub 34.155.108.18
+          ssh 34.155.108.18
 
           # Navigate to the project directory
           cd /virtual_machine
