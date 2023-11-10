@@ -28,7 +28,7 @@ jobs:
     # needs: ci
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Google Cloud VM
+      - name: Creating ssh items
         run: |
           # SSH into your Google Cloud VM
           
@@ -39,16 +39,19 @@ jobs:
           touch ~/.ssh/id_rsa
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-      - name: Deploy to Google Cloud VM
+      - name: Pulling project
         run: |
           ssh -o StrictHostKeyChecking=no reda@34.155.108.18 || \
           sudo su || \
           echo "${{ secrets.SECRET_USER_SSH_PUB_KEY}}" > ~/.ssh/id_rsa.pub || \
           chmod 600 ~/.ssh/id_rsa.pub || \
           echo "${{ secrets.SECRET_USER_SSH_KEY}}" > ~/.ssh/id_rsa || \
-          chmod 600 ~/.ssh/id_rsa || \
-          git clone git@github.com:redhabouzidi/Time_Manager.git || \ 
+          chmod 600 ~/.ssh/id_rsa
+      - name: Pulling project
+        run: |
+          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 || \
           cd Time_Manager || \ 
           git pull origin main || \
           docker compose build || \
           docker-compose up -d 
+        
