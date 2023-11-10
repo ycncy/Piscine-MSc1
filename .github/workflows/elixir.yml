@@ -33,9 +33,11 @@ jobs:
           # SSH into your Google Cloud VM
           
           mkdir ~/.ssh
+          touch ~/.ssh/id_rsa.pub
           echo "${{ secrets.SECRET_PUB_SSH_KEY}}" > ~/.ssh/id_rsa.pub
           chmod 600 ~/.ssh/id_rsa.pub
-          echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa$
+          touch ~/.ssh/id_rsa
+          echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
