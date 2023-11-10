@@ -1,6 +1,6 @@
 <template>
   <div class="bg-[#242424] h-16 flex flex-row p-6 justify-between items-center">
-    <h1 class="text-xl text-gray-400">Time Manager</h1>
+    <h1 class="text-xl text-gray-400">Sucess push</h1>
     <div>
       <div id="createUser">
         <PopupForm v-if="popupTriggers.trigger_create"
