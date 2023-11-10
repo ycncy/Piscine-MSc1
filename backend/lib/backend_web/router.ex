@@ -2,11 +2,13 @@ defmodule BackendWeb.Router do
   use BackendWeb, :router
 
   pipeline :api do
+    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
   end
 
   pipeline :admin do
     plug BackendWeb.AdminPlug
+    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -15,6 +17,7 @@ defmodule BackendWeb.Router do
 
   pipeline :general_manager do
     plug BackendWeb.GeneralManagerPlug
+    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -23,6 +26,7 @@ defmodule BackendWeb.Router do
 
   pipeline :manager do
     plug BackendWeb.ManagerPlug
+    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -31,6 +35,7 @@ defmodule BackendWeb.Router do
 
   pipeline :default do
     plug BackendWeb.DefaultPlug
+    plug CORSPlug, origin: "http://34.155.108.18:8080", headers: ["Authorization", "Content-Type", "X-Custom-Header"], methods: ["GET", "POST", "PUT", "DELETE"]
     plug :accepts, ["json"]
     plug :fetch_session
     plug :fetch_flash
@@ -82,6 +87,18 @@ defmodule BackendWeb.Router do
     post "/:userID", WorkingTimeController, :create_working_time
   end
 
+  scope "/api/teams", BackendWeb do
+    pipe_through :default
+    get "/:teamID", TeamController, :get_team_by_id
+
+    pipe_through :manager
+    get "/", TeamController, :get_all_teams
+
+    pipe_through :admin
+    delete "/:teamID", TeamController, :delete_team
+    post "/", TeamController, :create_team
+  end
+
   defp valid_api_key(conn, _opts) do
     key = System.get_env("ADMINKEY")
     case hd(get_req_header(conn, "api-key")) do
@@ -90,7 +107,7 @@ defmodule BackendWeb.Router do
       _ ->
         conn
         |> put_status(403)
-        |> json(%{error: "errors:{error:Forbidden}"})
+        |> json(%{error: "Forbidden"})
     end
   end
 
