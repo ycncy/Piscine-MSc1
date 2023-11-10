@@ -43,12 +43,8 @@ jobs:
           echo "${{ secrets.SECRET_USER_SSH_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           # Initialize a Git repository (if it doesn't exist)
-          if [ ! -d .git ]; then
-            git init
-          fi
-          # Set up the remote repository to point to your GitHub repository
-          git remote add origin https://github.com/redhabouzidi/Time_Manager
-
+          git pull git@github.com:redhabouzidi/Time_Manager.git
           # Fetch and pull the latest changes from the GitHub repository
+          cd Time_Manager
           git pull origin main
           docker-compose up -d --build
