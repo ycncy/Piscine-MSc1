@@ -60,7 +60,7 @@ const get_user_by_credentials = async (username, email) => {
     }
 }
 
-const create_user = async (username, email, password, role) => {
+const create_user = async (username, email, password, role, team_id) => {
     try {
         const response = await Axios.post(
             `${users_url}`,
@@ -69,7 +69,8 @@ const create_user = async (username, email, password, role) => {
                     username: username,
                     email: email,
                     password: password,
-                    role: role
+                    role: role,
+                    team_id: team_id
                 }
             }
         );
@@ -85,7 +86,7 @@ const create_user = async (username, email, password, role) => {
     }
 }
 
-const update_user = async (user_id, username, email, role) => {
+const update_user = async (user_id, username, email, role, team_id) => {
     try {
         const response = await Axios.put(
             `${users_url}/${user_id}`,
@@ -93,7 +94,8 @@ const update_user = async (user_id, username, email, role) => {
                 user: {
                     username: username,
                     email: email,
-                    role: role
+                    role: role,
+                    team_id: team_id
                 }
             }
         );

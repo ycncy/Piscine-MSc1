@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 gap-3 flex flex-col">
-    <div class="w-3/4 mx-auto px-4">
+    <div class="w-full mx-auto px-4">
       <div class="items-start justify-between md:flex">
         <div>
           <h3 class="text-white font-bold text-2xl">
@@ -153,7 +153,7 @@
       </PopupForm>
     </div>
     <div class="flex justify-center">
-      <FullCalendar class="w-3/4 border rounded-lg bg-white p-6" :options="calendarOptions" ref="fullCalendar"/>
+      <FullCalendar class="w-full border rounded-lg bg-white p-6" :options="calendarOptions" ref="fullCalendar"/>
     </div>
   </div>
 </template>
@@ -182,9 +182,7 @@ export default {
       working_times: undefined,
       current_user: undefined,
       editor_mode_boolean: false,
-      working_time_info: {
-        status: false
-      },
+      working_time_info: {},
       selectedWorkingTime: null,
 
       calendarOptions: {
@@ -344,8 +342,6 @@ export default {
 
       working_time_service.get_working_times_by_id(user_id).then((result) => {
         this.workingtimes = result.data;
-
-        console.log(this.$refs)
 
         for (const workingTime of this.workingtimes) {
           this.$refs.fullCalendar.getApi().addEvent({

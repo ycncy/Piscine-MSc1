@@ -24,7 +24,7 @@ ChartJS.register(
 )
 
 export default {
-  name: 'LinrChart',
+  name: 'LineChart',
   computed: {
     data() {
       return data

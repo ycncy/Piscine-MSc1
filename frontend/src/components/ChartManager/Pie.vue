@@ -26,7 +26,7 @@ ChartJS.register(
 )
 
 export default {
-  name: 'LinrChart',
+  name: 'LineChart',
   components: { Pie },
   props: {
     dataset: list,

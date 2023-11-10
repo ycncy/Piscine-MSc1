@@ -1,16 +1,19 @@
 <template>
-  <div class="flex flex-row gap-4 items-center justify-center py-10">
+  <div class="flex flex-row gap-2 items-center justify-center px-4 py-10">
     <div class="flex w-1/3 flex-col h-full gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
         <Pie :dataset="percent_working_times" :date="percent_label"/>
+        <Loader/>
       </div>
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
         <Radar :dataset="user_working_times" :date="date"/>
+        <Loader/>
       </div>
     </div>
-    <div class="w-1/2 h-full flex flex-col gap-4">
+    <div class="w-2/3 h-full flex flex-col gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
         <Line :dataset="user_working_times" :date="date"/>
+        <Loader/>
       </div>
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
         <Bar :dataset="user_working_times" :date="date"/>
@@ -25,6 +28,7 @@ import Line from "@/components/ChartManager/Line.vue";
 import Bar from "@/components/ChartManager/Bar.vue";
 import Pie from "@/components/ChartManager/Pie.vue";
 import Radar from "@/components/ChartManager/Radar.vue";
+import Loader from "@/components/Loader.vue";
 
 export default {
   name: 'chart',
@@ -37,7 +41,7 @@ export default {
       selectedChart: 'line'
     }
   },
-  components: {Line, Bar, Pie, Radar},
+  components: {Loader, Line, Bar, Pie, Radar},
   created() {
     const user_id = this.$route.params.userID;
 
@@ -45,7 +49,7 @@ export default {
   },
   async mounted() {
     const user_id = this.$route.params.userID;
-    
+
     if (!isNaN(parseInt(user_id))) {
     let data = await working_time_service.get_working_times_by_id(user_id);
     let time = [];

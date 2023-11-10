@@ -4,7 +4,7 @@
 
 <script>
 import User from './components/User.vue'
-import Navbar from "@/components/Navbar.vue";
+import Navbar from "@/components/Sidebar.vue";
 
 export default {
   name: 'App',

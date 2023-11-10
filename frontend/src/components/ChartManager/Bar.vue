@@ -35,7 +35,7 @@ ChartJS.register(
 )
 
 export default {
-  name: 'LinrChart',
+  name: 'LineChart',
   components: { Bar },
   props: {
     dataset: list,

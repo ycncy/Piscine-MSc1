@@ -33,7 +33,7 @@ ChartJS.register(
 )
 
 export default {
-  name: 'LinrChart',
+  name: 'LineChart',
   components: { Radar },
   props: {
     dataset: list,
