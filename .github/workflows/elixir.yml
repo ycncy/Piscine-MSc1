@@ -38,7 +38,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa.pub
           touch ~/.ssh/id_rsa
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa'
+          chmod 600 ~/.ssh/id_rsa
       - name: pulling the code
         run: |
           ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'cd Time_Manager
