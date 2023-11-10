@@ -45,6 +45,7 @@ jobs:
           git pull origin main'
       - name: launching the app
         run: |
-          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'cd Time_Manager
+          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'sudo su
+          cd Time_Manager
           docker-compose up -d --build'
         
