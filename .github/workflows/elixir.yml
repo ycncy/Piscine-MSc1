@@ -16,7 +16,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker-compose up -d --build --wait
+          docker-compose up -d --build
       - name: try unit tests on elixir
         run: |
           docker-compose exec backend mix test
