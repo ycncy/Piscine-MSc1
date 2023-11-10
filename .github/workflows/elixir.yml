@@ -19,7 +19,6 @@ jobs:
           docker-compose up -d --build
       - name: try unit tests on elixir
         run: |
-          docker-compose exec backend mix deps.get
           docker-compose exec backend mix test
       - name: destroy the created build
         run: |
