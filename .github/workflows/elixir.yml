@@ -41,13 +41,13 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
       - name: Pulling project
         run: |
-          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 "sudo su 
+          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'sudo su 
           echo "${{ secrets.SECRET_USER_SSH_PUB_KEY}}" > ~/.ssh/id_rsa.pub 
           chmod 600 ~/.ssh/id_rsa.pub 
           echo "${{ secrets.SECRET_USER_SSH_KEY}}" > ~/.ssh/id_rsa 
           chmod 600 ~/.ssh/id_rsa 
-          git clone git@github.com:redhabouzidi/Time_Manager.git"
+          git clone git@github.com:redhabouzidi/Time_Manager.git'
       - name: Pulling project
         run: |
-          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 "docker-compose up -d --build -f ~/Time_Manager/docker-compose.yml up"
+          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'docker-compose up -d --build -f ~/Time_Manager/docker-compose.yml up'
         
