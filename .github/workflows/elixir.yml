@@ -41,8 +41,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
       - name: Deploy to Google Cloud VM
         run: |
-          ssh -o StrictHostKeyChecking=no reda@34.155.108.18
-          su echo "${{ secrets.SECRET_USER_SSH_PUB_KEY}}" > ~/.ssh/id_rsa.pub || \
+          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 || \
+          sudo su || \
+          echo "${{ secrets.SECRET_USER_SSH_PUB_KEY}}" > ~/.ssh/id_rsa.pub || \
           chmod 600 ~/.ssh/id_rsa.pub || \
           echo "${{ secrets.SECRET_USER_SSH_KEY}}" > ~/.ssh/id_rsa || \
           chmod 600 ~/.ssh/id_rsa || \
