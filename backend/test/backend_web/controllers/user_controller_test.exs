@@ -12,6 +12,7 @@ defmodule BackendWeb.UserControllerTest do
     username: "some username",
     email: "some@mail.com",
     password: "somepassword",
+    team_id: 1,
     role: "employee"
   }
 
@@ -19,10 +20,11 @@ defmodule BackendWeb.UserControllerTest do
     username: "someupdatedusername",
     email: "someupdated@mail.com",
     password: "somepassword",
+    team_id: 1,
     role: "manager"
   }
 
-  @invalid_attrs %{username: nil, email: nil,password: nil,role: nil}
+  @invalid_attrs %{username: nil, email: nil,password: nil,role: nil, team_id: nil}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -54,6 +56,7 @@ defmodule BackendWeb.UserControllerTest do
                "id" => ^id,
                "email" => "some@mail.com",
                "username" => "some username",
+               "team_id" => 1,
                "role" => "employee"
              } = json_response(conn, 200)
     end
