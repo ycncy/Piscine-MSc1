@@ -5,10 +5,6 @@
         <Pie :dataset="percent_working_times" :date="percent_label"/>
         <Loader/>
       </div>
-      <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Radar :dataset="user_working_times" :date="date"/>
-        <Loader/>
-      </div>
     </div>
     <div class="w-2/3 h-full flex flex-col gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
@@ -16,7 +12,7 @@
         <Loader/>
       </div>
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Bar :dataset="user_working_times" :date="date"/>
+        <Bar :dataset="weeklyData" :date="weeklyLabel"/>
       </div>
     </div>
   </div>
@@ -38,6 +34,8 @@ export default {
       percent_working_times: [],
       date: [],
       percent_label: [],
+      weeklyData: [],
+      weeklyLabel: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       selectedChart: 'line'
     }
   },
@@ -53,6 +51,18 @@ export default {
     if (!isNaN(parseInt(user_id))) {
     let data = await working_time_service.get_working_times_by_id(user_id);
     let time = [];
+    let stackedTime= [0,0,0,0,0,0,0];
+    let today = new Date();
+
+    // Get the first day of the current week (Sunday)
+    let startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
+    // Get the first day of the next week (Sunday)
+    let endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+    
     const minimum_time = 8
     let overtime = 0, normaltime = 0, undertime = 0
     for (let index = 0; index < data.data.length; index++) {
@@ -60,7 +70,9 @@ export default {
       let end = new Date(data.data[index].end_time);
       time.push((end.getTime() - start.getTime()) / (1000 * 60 * 60));
       this.date.push(start.getDate() + "-" + start.getMonth());
-
+      if(start >= startOfWeek && start<= endOfWeek){
+        stackedTime[start.getDay()-1]+=time[index]
+      }
       if (time[index] > minimum_time) {
 
         overtime += time[index] - minimum_time;
@@ -74,6 +86,14 @@ export default {
         this.$router.push("/")
       }
     }
+    this.weeklyData = [
+      {
+        label: "Time",
+        data: stackedTime,
+        borderColor: '#3B82F6',
+        backgroundColor: '#3B82F6'
+      }
+    ]
     this.user_working_times = [
       {
         label: "Time",
