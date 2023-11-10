@@ -46,8 +46,10 @@ jobs:
           chmod 600 ~/.ssh/id_rsa.pub 
           echo "${{ secrets.SECRET_USER_SSH_KEY}}" > ~/.ssh/id_rsa 
           chmod 600 ~/.ssh/id_rsa 
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
           git clone git@github.com:redhabouzidi/Time_Manager.git'
-      - name: Pulling project
+      - name: launching the app
         run: |
           ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'docker-compose up -d --build -f ~/Time_Manager/docker-compose.yml up'
         
