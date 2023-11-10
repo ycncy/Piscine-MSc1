@@ -40,7 +40,7 @@ jobs:
           cat ~/.ssh/id_rsa.pub
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa.pub
-          ssh virtualmachine@34.155.108.18
+          ssh -o StrictHostChecking=no virtualmachine@34.155.108.18
 
 
           # Navigate to the project directory
