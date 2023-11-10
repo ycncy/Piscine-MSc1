@@ -38,17 +38,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa.pub
           touch ~/.ssh/id_rsa
           echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-      - name: Pulling project
+          chmod 600 ~/.ssh/id_rsa'
+      - name: pulling the code
         run: |
-          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'sudo su 
-          echo "${{ secrets.SECRET_PUB_SSH_KEY}}" > ~/.ssh/id_rsa.pub 
-          chmod 600 ~/.ssh/id_rsa.pub 
-          echo "${{ secrets.SECRET_SSH_KEY}}" > ~/.ssh/id_rsa 
-          chmod 600 ~/.ssh/id_rsa 
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
-          sudo git clone git@github.com:redhabouzidi/Time_Manager.git'
+          ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'cd Time_Manager
+          git pull origin main'
       - name: launching the app
         run: |
           ssh -o StrictHostKeyChecking=no reda@34.155.108.18 'docker-compose up -d --build -f ~/Time_Manager/docker-compose.yml up'
