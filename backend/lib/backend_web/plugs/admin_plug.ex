@@ -13,6 +13,11 @@ defmodule BackendWeb.AdminPlug do
         |> halt()
       auth_token ->
         case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
+          :error ->
+            conn
+            |> put_status(403)
+            |> send_resp(:forbidden, "Forbidden")
+            |> halt()
           claims ->
             case Map.get(claims, "role") do
               "administrator" ->
@@ -23,11 +28,6 @@ defmodule BackendWeb.AdminPlug do
                 |> send_resp(:forbidden, "Forbidden")
                 |> halt()
             end
-          :error ->
-            conn
-            |> put_status(403)
-            |> send_resp(:forbidden, "Forbidden")
-            |> halt()
         end
     end
   end

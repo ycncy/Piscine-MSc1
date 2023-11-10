@@ -20,8 +20,6 @@ defmodule BackendWeb.WorkingTimeController do
           _ ->
             query = from(x in WorkingTime, where: x.user_id == ^user_id_int)
 
-            IO.inspect(query)
-
             with working_times <- Repo.all(query) do
               conn
               |> put_status(200)
