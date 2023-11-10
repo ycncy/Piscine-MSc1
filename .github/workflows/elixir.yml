@@ -45,6 +45,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           # Initialize a Git repository (if it doesn't exist)
           git clone git@github.com:redhabouzidi/Time_Manager.git
+          ls
           # Fetch and pull the latest changes from the GitHub repository
           cd Time_Manager
           git pull origin main
