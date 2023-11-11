@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.no_params" class="flex flex-col gap-4 justify-center py-16">
+  <div v-if="this.no_params" class="flex flex-col gap-4 min-h-screen justify-center py-16">
     <h1 class="text-gray-400 text-4xl w-full flex justify-center items-center">
       Welcome to Time Manager Dashboard
     </h1>

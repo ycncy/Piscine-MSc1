@@ -1,18 +1,19 @@
 <template>
-  <div class="flex flex-row gap-2 items-center justify-center px-4 py-10">
+  <div class="flex w-[90%] min-h-screen flex-row gap-2 items-center m-auto justify-center py-10">
     <div class="flex w-1/3 flex-col h-full gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Pie :dataset="percent_working_times" :date="percent_label"/>
-        <Loader/>
+        <Loader class="flex justify-center" v-if="!percent_working_times"/>
+        <Pie v-else :dataset="percent_working_times" :date="percent_label"/>
       </div>
     </div>
     <div class="w-2/3 h-full flex flex-col gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Line :dataset="user_working_times" :date="date"/>
-        <Loader/>
+        <Loader class="flex justify-center" v-if="!user_working_times"/>
+        <Line v-else :dataset="user_working_times" :date="date"/>
       </div>
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Bar :dataset="weeklyData" :date="weeklyLabel"/>
+        <Loader class="flex justify-center" v-if="!weeklyData"/>
+        <Bar v-else :dataset="weeklyData" :date="weeklyLabel"/>
       </div>
     </div>
   </div>
@@ -30,11 +31,11 @@ export default {
   name: 'chart',
   data() {
     return {
-      user_working_times: [],
-      percent_working_times: [],
+      user_working_times: undefined,
+      percent_working_times: undefined,
       date: [],
       percent_label: [],
-      weeklyData: [],
+      weeklyData: undefined,
       weeklyLabel: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       selectedChart: 'line'
     }

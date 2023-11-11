@@ -45,6 +45,7 @@ defmodule BackendWeb.Router do
   scope "/api/authentication", BackendWeb do
     pipe_through :api
     post "/login", SessionUserController, :login
+    get "/check-auth", SessionUserController, :is_authenticated
 
     pipe_through :default
     post "/logout", SessionUserController, :logout

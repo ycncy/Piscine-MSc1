@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 gap-3 flex flex-col">
-    <div class="w-full mx-auto px-4">
+    <div class="w-3/4 mx-auto px-4">
       <div class="items-start justify-between md:flex">
         <div>
           <h3 class="text-white font-bold text-2xl">
@@ -153,7 +153,7 @@
       </PopupForm>
     </div>
     <div class="flex justify-center">
-      <FullCalendar class="w-full border rounded-lg bg-white p-6" :options="calendarOptions" ref="fullCalendar"/>
+      <FullCalendar class="w-3/4 border rounded-lg bg-white p-6" :options="calendarOptions" ref="fullCalendar"/>
     </div>
   </div>
 </template>

@@ -5,6 +5,26 @@ defmodule BackendWeb.SessionUserController do
   alias Backend.Repo
   alias Joken
 
+  def is_authenticated(conn, _params) do
+    case Map.get(conn.req_cookies, "auth_token") do
+      nil ->
+        conn
+        |> put_status(401)
+        |> json(%{error: "User is not authenticated"})
+      auth_token ->
+        case JWT.verify(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
+          {:ok, claims} ->
+            conn
+            |> put_status(200)
+            |> json(%{message: "User is authenticated", payload: claims})
+          {:error, _reason} ->
+            conn
+            |> put_status(401)
+            |> json(%{error: "User is not authenticated"})
+        end
+    end
+  end
+
   def login(conn, %{"user" => user_params}) do
     email = Map.get(user_params, "email")
     password = Map.get(user_params, "password")

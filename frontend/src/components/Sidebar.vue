@@ -76,6 +76,6 @@ export default {
     authentication_service() {
       return authentication_service
     }
-  },
+  }
 };
 </script>
