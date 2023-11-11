@@ -195,10 +195,10 @@
             </tr>
             </tbody>
           </table>
-          <div v-if="this.team && this.team.length >= 5" class="flex border flex-row bg-white gap-2 justify-around p-2 items-center">
+          <div v-if="this.team && this.team.length > 5" class="flex border flex-row bg-white gap-2 justify-around p-2 items-center">
             <button @click="currentPage--" :disabled="currentPage === 1" class="text-[#161717] bg-gray-300 p-2 rounded">Previous</button>
             <span>Page {{ currentPage }}</span>
-            <button class="text-[#161717] bg-gray-300 p-2 rounded" @click="currentPage++" :disabled="endIndex >= teams.length">Next</button>
+            <button class="text-[#161717] bg-gray-300 p-2 rounded" @click="currentPage++" :disabled="(((this.currentPage - 1) * this.itemsPerPage) + this.itemsPerPage) >= team.length">Next</button>
           </div>
           <div class="flex border flex-row bg-white gap-2 justify-around p-2 items-center">
             <button class="text-[#161717] bg-gray-300 rounded-full p-5 w-8 h-8 flex items-center justify-center" @click="() => togglePopup('trigger_create_team')" type="button"><span class="material-symbols-outlined"> group_add </span></button>
@@ -270,12 +270,6 @@ export default {
   },
   components: {Loader, Clocks, Logout, PopupForm},
   methods: {
-    startIndex() {
-      return (this.currentPage - 1) * this.itemsPerPage;
-    },
-    endIndex() {
-      return this.startIndex + this.itemsPerPage;
-    },
     async redirectToTable(user) {
       if (this.$route.fullPath === "/dashboard") {
         this.$router.push({name: "TeamDashboard", params: {userID: user.id}});
