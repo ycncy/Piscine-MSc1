@@ -55,34 +55,22 @@ defmodule BackendWeb.SessionUserController do
   end
 
   def logout(conn, _params) do
-    csrf_token = Plug.Conn.get_req_header(conn, "csrf-token")
-    case csrf_token do
-      {:error, reason} ->
-        conn
-        |> put_status(500)
-        |> json(%{error: "Logout failed", reason: reason})
-      [] ->
+    case Map.get(conn.req_cookies, "auth_token") do
+      {:error, _} ->
         conn
         |> put_status(400)
-        |> json(%{error: "Bad request : csrf header not found"})
-      _ ->
-        case Map.get(conn.req_cookies, "auth_token") do
+        |> json(%{error: "Bad request : jwt token not found"})
+      auth_token ->
+        case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
           {:error, _} ->
             conn
             |> put_status(400)
             |> json(%{error: "Bad request : jwt token not found"})
-          auth_token ->
-            case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
-              {:error, _} ->
-                conn
-                |> put_status(400)
-                |> json(%{error: "Bad request : jwt token not found"})
-              _ ->
-                conn
-                |> delete_resp_cookie("auth_token")
-                |> put_status(200)
-                |> json(%{message: "Logout successful"})
-            end
+          _ ->
+            conn
+            |> delete_resp_cookie("auth_token")
+            |> put_status(200)
+            |> json(%{message: "Logout successful"})
         end
     end
   end

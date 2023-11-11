@@ -5,12 +5,15 @@ export default {
   name: "Logout",
   methods: {
     async logout() {
-      await authentication_service.logout();
+      const response = await authentication_service.logout();
 
-      authentication_service.delete_user();
-      authentication_service.delete_token();
+      if (response.status_code === 200) {
 
-      this.$router.push("/login")
+        authentication_service.delete_user();
+        authentication_service.delete_token();
+
+        this.$router.push("/login")
+      }
     }
   }
 }
