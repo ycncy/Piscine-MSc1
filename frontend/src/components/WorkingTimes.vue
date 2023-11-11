@@ -61,7 +61,7 @@
           <h1 class="text-2xl">Create new Working Time</h1>
           <div>
             <label class="font-medium">Start time</label>
-            <input type="text" required v-model="working_time_info.start_time"
+            <input type="datetime-local" required v-model="working_time_info.start_time"
                    placeholder="Start datetime"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
             />
@@ -69,7 +69,7 @@
           <div>
             <label class="font-medium">End time</label>
             <input
-                type="text"
+                type="datetime-local"
                 required
                 placeholder="End datetime"
                 v-model="working_time_info.end_time"
@@ -90,7 +90,7 @@
           <h1 class="text-2xl">Update Working Time</h1>
           <div>
             <label class="font-medium">Start time</label>
-            <input type="text" required v-model="working_time_info.start_time"
+            <input type="datetime-local" required v-model="working_time_info.start_time"
                    :placeholder="working_time_info.start_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
             />
@@ -98,7 +98,7 @@
           <div>
             <label class="font-medium">End time</label>
             <input
-                type="text"
+                type="datetime-local"
                 required
                 :placeholder="working_time_info.end_time"
                 v-model="working_time_info.end_time"
@@ -131,12 +131,12 @@
         <form class="flex flex-col gap-2" @submit.prevent="updateWorkingTime" action="/frontend/public">
           <div>
             <label class="font-medium">Start time</label>
-            <input type="text" v-model="working_time_info.start_time" :placeholder="working_time_info.start_time"
+            <input type="datetime-local" v-model="working_time_info.start_time" :placeholder="working_time_info.start_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"/>
           </div>
           <div>
             <label class="font-medium">End time</label>
-            <input type="text" v-model="working_time_info.end_time" :placeholder="working_time_info.end_time"
+            <input type="datetime-local" v-model="working_time_info.end_time" :placeholder="working_time_info.end_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"/>
           </div>
           <div class="flex gap-2">
