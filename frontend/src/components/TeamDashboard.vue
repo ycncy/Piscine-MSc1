@@ -109,17 +109,3 @@ export default {
 }
 
 </script>
-
-<style>
-.slide-enter-active, .slide-leave-active {
-  transition: transform 0.5s;
-}
-
-.slide-enter, .slide-leave-to {
-  transform: translateX(0);
-}
-
-.slide-leave, .slide-enter-to {
-  transform: translateX(-100%);
-}
-</style>
