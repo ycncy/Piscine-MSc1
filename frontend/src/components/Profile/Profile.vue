@@ -3,7 +3,8 @@
     <div class="flex flex-col gap-6">
       <p class="text-white text-3xl">Your information</p>
       <form @submit.prevent="updateCurrentUser" class="space-y-5 bg-white shadow p-4 py-6 sm:p-6 sm:rounded-lg">
-        <Loader v-if="(!this.teams && this.authenticated_user.role !== 'employee') || !this.team" class="flex justify-center"/>
+        <Loader v-if="(!this.teams && this.authenticated_user.role !== 'employee') || !this.team"
+                class="flex justify-center"/>
         <div v-else class="space-y-5">
           <div>
             <label>Username</label>
@@ -48,11 +49,11 @@
           <PopupForm v-if="popupTriggers.trigger_update"
                      :togglePopup="() => togglePopup('trigger_update')">
             <form @submit.prevent="updateUser" class="space-y-5">
-              <h1 class="text-2xl">Update user : {{ user_form_info.username }}</h1>
+              <h1 class="text-2xl">Update user : {{ current_user_form_info.username }}</h1>
               <div>
                 <label>Username</label>
                 <input type="text" required v-model="user_form_info.username"
-                       :placeholder="current_user.username"
+                       :placeholder="selected_user.username"
                        class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
                 />
               </div>
@@ -63,7 +64,7 @@
                     type="email"
                     @change="() => this.error = undefined"
                     pattern="[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+.[a-zA-Z.]{2,15}"
-                    :placeholder="user_form_info.email" name="email"
+                    :placeholder="selected_user.email" name="email"
                     v-model="user_form_info.email" required>
               </div>
               <div class="flex flex-col gap-2">
@@ -170,6 +171,7 @@ export default {
       team: undefined,
       teams: undefined,
       user_form_info: {},
+      selected_user: {},
       current_user_form_info: {},
       authenticated_user: {}
     }
@@ -191,27 +193,15 @@ export default {
   },
   methods: {
     async updateUser() {
-      const user_parsed = this.current_user;
+      const user_parsed = this.selected_user;
 
-      let response = undefined
-
-      if (this.authenticated_user.role !== 'employee') {
-        response = await users_service.update_user(
-            user_parsed.id,
-            this.user_form_info.username,
-            this.user_form_info.email,
-            this.user_form_info.role,
-            this.user_form_info.team
-        );
-      } else {
-        response = await users_service.update_user(
-            user_parsed.id,
-            this.user_form_info.username,
-            this.user_form_info.email,
-            this.authenticated_user.role,
-            this.authenticated_user.team
-        );
-      }
+      const response = await users_service.update_user(
+          user_parsed.id,
+          this.user_form_info.username,
+          this.user_form_info.email,
+          this.user_form_info.role,
+          this.user_form_info.team
+      );
 
       switch (response.status_code) {
         case 200:
@@ -223,14 +213,29 @@ export default {
       }
     },
     async updateCurrentUser() {
-      const user_parsed = this.current_user;
-      const response = await users_service.update_user(
-          user_parsed.id,
-          this.user_form_info.username,
-          this.user_form_info.email,
-          this.user_form_info.role,
-          this.user_form_info.team
-      );
+      const user_parsed = this.authenticated_user;
+
+      console.log(user_parsed)
+
+      let response = undefined;
+
+      if (this.authenticated_user.role !== 'employee') {
+        response = await users_service.update_user(
+            user_parsed.id,
+            this.current_user_form_info.username,
+            this.current_user_form_info.email,
+            user_parsed.role,
+            this.current_user_form_info.team
+        );
+      } else {
+        response = await users_service.update_user(
+            user_parsed.id,
+            this.current_user_form_info.username,
+            this.current_user_form_info.email,
+            this.authenticated_user.role,
+            this.authenticated_user.team
+        );
+      }
 
       switch (response.status_code) {
         case 200:
@@ -261,11 +266,11 @@ export default {
       return moment(new Date(dateTime)).format('MMMM Do YYYY, h:mm');
     },
     toggleEditUser(user) {
-      this.user_form_info = Object.assign({}, user);
+      this.selected_user = Object.assign({}, user);
       this.togglePopup('trigger_update');
     },
     toggleDeleteUser(user) {
-      this.user_form_info = Object.assign({}, user);
+      this.selected_user = Object.assign({}, user);
       this.togglePopup('trigger_delete');
     },
   },

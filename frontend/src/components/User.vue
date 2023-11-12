@@ -103,7 +103,7 @@
                     :placeholder="current_user.email" name="email"
                     v-model="user_form_info.email" required>
               </div>
-              <div class="flex flex-col gap-2">
+              <div v-if="this.current_user.role !== 'administrator'" class="flex flex-col gap-2">
                 <label>Role</label>
                 <select
                     class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
@@ -319,11 +319,14 @@ export default {
     },
     async updateUser() {
       const user_parsed = this.current_user;
+
+      const role = this.current_user.role === "administrator" ? this.current_user.role : this.user_form_info.role;
+
       const response = await users_service.update_user(
           user_parsed.id,
           this.user_form_info.username,
           this.user_form_info.email,
-          this.user_form_info.role,
+          role,
           this.user_form_info.team
       );
 
