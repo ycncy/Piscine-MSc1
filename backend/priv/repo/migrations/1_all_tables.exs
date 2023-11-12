@@ -2,11 +2,20 @@ defmodule Backend.Repo.Migrations.AllTables do
   use Ecto.Migration
 
   def change do
+    create table(:teams) do
+      add :name, :string, null: false
+    end
+
+    create unique_index(:teams, :id)
+
+    execute("INSERT INTO teams (name) VALUES ('admin')")
+
     create table(:users) do
       add :username, :string, null: false, primary_key: true
       add :email, :string, null: false, primary_key: true
       add :role, :string, null: false
       add :password, :string, null: false
+      add :team_id, references(:teams, column: :id, on_delete: :delete_all)
 
       timestamps(type: :utc_datetime)
     end

@@ -1,19 +1,19 @@
 <template>
-  <div class="flex flex-row gap-4 items-center justify-center py-10">
+  <div class="flex w-[90%] min-h-screen flex-row gap-2 items-center m-auto justify-center py-10">
     <div class="flex w-1/3 flex-col h-full gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Pie :dataset="percent_working_times" :date="percent_label"/>
-      </div>
-      <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Radar :dataset="user_working_times" :date="date"/>
+        <Loader class="flex justify-center" v-if="!percent_working_times"/>
+        <Pie v-else :dataset="percent_working_times" :date="percent_label"/>
       </div>
     </div>
-    <div class="w-1/2 h-full flex flex-col gap-4">
+    <div class="w-2/3 h-full flex flex-col gap-4">
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Line :dataset="user_working_times" :date="date"/>
+        <Loader class="flex justify-center" v-if="!user_working_times"/>
+        <Line v-else :dataset="user_working_times" :date="date"/>
       </div>
       <div class="bg-[#161717] h-full shadow-lg rounded-3xl flex items-center justify-center p-8">
-        <Bar :dataset="user_working_times" :date="date"/>
+        <Loader class="flex justify-center" v-if="!weeklyData"/>
+        <Bar v-else :dataset="weeklyData" :date="weeklyLabel"/>
       </div>
     </div>
   </div>
@@ -25,19 +25,22 @@ import Line from "@/components/ChartManager/Line.vue";
 import Bar from "@/components/ChartManager/Bar.vue";
 import Pie from "@/components/ChartManager/Pie.vue";
 import Radar from "@/components/ChartManager/Radar.vue";
+import Loader from "@/components/Loader.vue";
 
 export default {
   name: 'chart',
   data() {
     return {
-      user_working_times: [],
-      percent_working_times: [],
+      user_working_times: undefined,
+      percent_working_times: undefined,
       date: [],
       percent_label: [],
+      weeklyData: undefined,
+      weeklyLabel: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
       selectedChart: 'line'
     }
   },
-  components: {Line, Bar, Pie, Radar},
+  components: {Loader, Line, Bar, Pie, Radar},
   created() {
     const user_id = this.$route.params.userID;
 
@@ -45,10 +48,22 @@ export default {
   },
   async mounted() {
     const user_id = this.$route.params.userID;
-    
+
     if (!isNaN(parseInt(user_id))) {
     let data = await working_time_service.get_working_times_by_id(user_id);
     let time = [];
+    let stackedTime= [0,0,0,0,0,0,0];
+    let today = new Date();
+
+    // Get the first day of the current week (Sunday)
+    let startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
+    // Get the first day of the next week (Sunday)
+    let endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+    
     const minimum_time = 8
     let overtime = 0, normaltime = 0, undertime = 0
     for (let index = 0; index < data.data.length; index++) {
@@ -56,7 +71,9 @@ export default {
       let end = new Date(data.data[index].end_time);
       time.push((end.getTime() - start.getTime()) / (1000 * 60 * 60));
       this.date.push(start.getDate() + "-" + start.getMonth());
-
+      if(start >= startOfWeek && start<= endOfWeek){
+        stackedTime[start.getDay()-1]+=time[index]
+      }
       if (time[index] > minimum_time) {
 
         overtime += time[index] - minimum_time;
@@ -70,6 +87,14 @@ export default {
         this.$router.push("/")
       }
     }
+    this.weeklyData = [
+      {
+        label: "Time",
+        data: stackedTime,
+        borderColor: '#3B82F6',
+        backgroundColor: '#3B82F6'
+      }
+    ]
     this.user_working_times = [
       {
         label: "Time",

@@ -1,11 +1,29 @@
 defmodule BackendWeb.SessionUserController do
   use BackendWeb, :controller
 
-  alias Comeonin.Bcrypt
   alias Backend.Users.User
-  alias Backend.Users
   alias Backend.Repo
   alias Joken
+
+  def is_authenticated(conn, _params) do
+    case Map.get(conn.req_cookies, "auth_token") do
+      nil ->
+        conn
+        |> put_status(401)
+        |> json(%{error: "User is not authenticated"})
+      auth_token ->
+        case JWT.verify(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
+          {:ok, claims} ->
+            conn
+            |> put_status(200)
+            |> json(%{message: "User is authenticated", payload: claims})
+          {:error, _reason} ->
+            conn
+            |> put_status(401)
+            |> json(%{error: "User is not authenticated"})
+        end
+    end
+  end
 
   def login(conn, %{"user" => user_params}) do
     email = Map.get(user_params, "email")
@@ -18,6 +36,7 @@ defmodule BackendWeb.SessionUserController do
         jwt_payload = %{
           "user_id" => user.id,
           "role" => user.role,
+          "team_id" => user.team_id,
           "csrf_token" => csrf_token,
           "exp" => DateTime.to_unix(DateTime.utc_now()) + 604800
         }
@@ -26,7 +45,7 @@ defmodule BackendWeb.SessionUserController do
 
         conn
         |> put_resp_cookie("auth_token", jwt_token, http_only: true)
-        |> json(%{message: "Login successful", user: %{id: user.id, role: user.role}, csrf_token: csrf_token})
+        |> json(%{message: "Login successful", user: %{id: user.id, role: user.role, team_id: user.team_id}, csrf_token: csrf_token})
 
       {:error, reason} ->
         conn
@@ -36,39 +55,24 @@ defmodule BackendWeb.SessionUserController do
   end
 
   def logout(conn, _params) do
-    csrf_token = Plug.Conn.get_req_header(conn, "csrf-token")
-    IO.inspect(Plug.Conn.get_req_header(conn, "csrf-token"))
-    case csrf_token do
-      _ ->
-
-        case Map.get(conn.req_cookies, "auth_token") do
-          auth_token ->
-            case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
-              claims ->
-                conn
-                |> delete_resp_cookie("auth_token")
-                |> put_status(200)
-                |> json(%{message: "Logout successful"})
-              {:error, reason} ->
-                conn
-                |> put_status(400)
-                |> json(%{error: "Bad request : jwt token not found"})
-            end
-          {:error, reason} ->
+    case Map.get(conn.req_cookies, "auth_token") do
+      {:error, _} ->
+        conn
+        |> put_status(400)
+        |> json(%{error: "Bad request : jwt token not found"})
+      auth_token ->
+        case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
+          {:error, _} ->
             conn
             |> put_status(400)
             |> json(%{error: "Bad request : jwt token not found"})
+          _ ->
+            conn
+            |> delete_resp_cookie("auth_token")
+            |> put_status(200)
+            |> json(%{message: "Logout successful"})
         end
-      [] ->
-        conn
-        |> put_status(400)
-        |> json(%{error: "Bad request : csrf header not found"})
-      {:error, reason} ->
-        conn
-        |> put_status(500)
-        |> json(%{error: "Logout failed", reason: reason})
     end
-
   end
 
   defp authenticate(email, password) do

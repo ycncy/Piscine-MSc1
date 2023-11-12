@@ -45,6 +45,7 @@ defmodule BackendWeb.Router do
   scope "/api/authentication", BackendWeb do
     pipe_through :api
     post "/login", SessionUserController, :login
+    get "/check-auth", SessionUserController, :is_authenticated
 
     pipe_through :default
     post "/logout", SessionUserController, :logout
@@ -87,6 +88,18 @@ defmodule BackendWeb.Router do
     post "/:userID", WorkingTimeController, :create_working_time
   end
 
+  scope "/api/teams", BackendWeb do
+    pipe_through :default
+    get "/:teamID", TeamController, :get_team_by_id
+
+    pipe_through :manager
+    get "/", TeamController, :get_all_teams
+
+    pipe_through :admin
+    delete "/:teamID", TeamController, :delete_team
+    post "/", TeamController, :create_team
+  end
+
   defp valid_api_key(conn, _opts) do
     key = System.get_env("ADMINKEY")
     case hd(get_req_header(conn, "api-key")) do
@@ -95,7 +108,7 @@ defmodule BackendWeb.Router do
       _ ->
         conn
         |> put_status(403)
-        |> json(%{error: "errors:{error:Forbidden}"})
+        |> json(%{error: "Forbidden"})
     end
   end
 

@@ -64,7 +64,6 @@ defmodule BackendWeb.UserController do
 
   def create_user(conn, %{"user" => user_params}) do
 
-
     username = Map.get(user_params,"username");
     email = Map.get(user_params,"email")
     password = Map.get(user_params, "password")
@@ -77,7 +76,6 @@ defmodule BackendWeb.UserController do
 
     else
       user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
-      password = Map.get(user_params, "password")
       case Users.create_user(user_params) do
         {:ok, %User{} = user} ->
           conn
@@ -105,13 +103,16 @@ defmodule BackendWeb.UserController do
     if (username == "" || email == "" || password == "" || (role != "employee" && role != "manager" && role != "general_manager" && role != "administrator") ) do
       conn
       |> put_status(422)
-      |> json(%{error: "InvalidUserID", message: "Invalid user ID format"})
+      |> json(%{error: "invalid data"})
+
     else
       case Integer.parse(user_id) do
         {user_id_int, _} ->
           case Users.get_user!(user_id_int) do
             %User{} = user ->
-              user_params = Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
+              if (Map.get(user_params, "password")) do
+                Map.update!(user_params, "password", &Comeonin.Bcrypt.hashpwsalt/1)
+              end
               case Users.update_user(user, user_params) do
                 {:ok, %User{} = updated_user} ->
                   conn

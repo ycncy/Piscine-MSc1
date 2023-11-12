@@ -61,7 +61,7 @@
           <h1 class="text-2xl">Create new Working Time</h1>
           <div>
             <label class="font-medium">Start time</label>
-            <input type="datetime-local" required v-model="working_time_info.start_time"
+            <input type="text" required v-model="working_time_info.start_time"
                    placeholder="Start datetime"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
             />
@@ -69,7 +69,7 @@
           <div>
             <label class="font-medium">End time</label>
             <input
-                type="datetime-local"
+                type="text"
                 required
                 placeholder="End datetime"
                 v-model="working_time_info.end_time"
@@ -90,7 +90,7 @@
           <h1 class="text-2xl">Update Working Time</h1>
           <div>
             <label class="font-medium">Start time</label>
-            <input type="datetime-local" required v-model="working_time_info.start_time"
+            <input type="text" required v-model="working_time_info.start_time"
                    :placeholder="working_time_info.start_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"
             />
@@ -98,7 +98,7 @@
           <div>
             <label class="font-medium">End time</label>
             <input
-                type="datetime-local"
+                type="text"
                 required
                 :placeholder="working_time_info.end_time"
                 v-model="working_time_info.end_time"
@@ -131,12 +131,12 @@
         <form class="flex flex-col gap-2" @submit.prevent="updateWorkingTime" action="/frontend/public">
           <div>
             <label class="font-medium">Start time</label>
-            <input type="datetime-local" v-model="working_time_info.start_time" :placeholder="working_time_info.start_time"
+            <input type="text" v-model="working_time_info.start_time" :placeholder="working_time_info.start_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"/>
           </div>
           <div>
             <label class="font-medium">End time</label>
-            <input type="datetime-local" v-model="working_time_info.end_time" :placeholder="working_time_info.end_time"
+            <input type="text" v-model="working_time_info.end_time" :placeholder="working_time_info.end_time"
                    class="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-[#161717] shadow-sm rounded-lg"/>
           </div>
           <div class="flex gap-2">
@@ -182,7 +182,9 @@ export default {
       working_times: undefined,
       current_user: undefined,
       editor_mode_boolean: false,
-      working_time_info: {},
+      working_time_info: {
+        status: false
+      },
       selectedWorkingTime: null,
 
       calendarOptions: {
@@ -307,12 +309,11 @@ export default {
     },
   },
   async mounted() {
-    this.authenticated_user = JSON.parse(authentication_service.get_user())
-
-    const user_id = this.$route.params.userID;
-
-    if (!isNaN(parseInt(user_id))) {
-      await users_service.get_user_by_id(user_id)
+    if (!authentication_service.is_logged()) {
+      this.$router.push("/")
+    } else {
+      const user = JSON.parse(authentication_service.get_user());
+      await users_service.get_user_by_id(user.id)
           .then((response) => {
             this.current_user = response.data
           })
@@ -320,27 +321,19 @@ export default {
             this.$router.push("/")
           });
 
-      await working_time_service.get_working_times_by_id(user_id)
+      await working_time_service.get_working_times_by_id(user.id)
           .then((result) => {
             this.working_times = result.data;
           });
     }
+    this.authenticated_user = JSON.parse(authentication_service.get_user())
   },
   async created() {
-    const user_id = this.$route.params.userID;
-
-    if (!isNaN(parseInt(user_id))) {
-      await users_service.get_user_by_id(user_id).then((response) => {
-        if (response.status_code === 404) {
-          this.$router.push("/")
-        } else {
-          this.current_user = response.data
-        }
-      }).catch(() => {
-        this.$router.push("/")
-      });
-
-      working_time_service.get_working_times_by_id(user_id).then((result) => {
+    if (!authentication_service.is_logged()) {
+      this.$router.push("/")
+    } else {
+      const user = JSON.parse(authentication_service.get_user());
+      working_time_service.get_working_times_by_id(user.id).then((result) => {
         this.workingtimes = result.data;
 
         for (const workingTime of this.workingtimes) {
@@ -353,8 +346,6 @@ export default {
           });
         }
       });
-    } else {
-      this.$router.push("/")
     }
   },
 };

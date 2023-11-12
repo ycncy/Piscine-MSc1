@@ -13,13 +13,13 @@ defmodule BackendWeb.DefaultPlug do
         |> halt()
       auth_token ->
         case JWT.verify!(auth_token, %{key: BackendWeb.Endpoint.config(:joken_secret_key)}) do
-          claims ->
-            conn
           :error ->
             conn
             |> put_status(403)
             |> send_resp(:forbidden, "Forbidden")
             |> halt()
+          _ ->
+            conn
         end
     end
   end

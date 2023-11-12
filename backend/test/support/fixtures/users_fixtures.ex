@@ -14,6 +14,7 @@ defmodule Backend.UsersFixtures do
         email: "some@mail.com",
         username: "someusername",
         password: "somepassword",
+        team_id: 1,
         role: "employee"
       })
       |> Backend.Users.create_user()
@@ -27,6 +28,7 @@ defmodule Backend.UsersFixtures do
         email: "administrator@timemanager.com",
         username: "administrator",
         password: Comeonin.Bcrypt.hashpwsalt("administrator"),
+        team_id: 1,
         role: "administrator"
       })
       |> Backend.Users.create_user()

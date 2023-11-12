@@ -1,11 +1,14 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Chart from "@/components/ChartManager/Chart.vue";
-import Clocks from "@/components/Clocks.vue";
 import UserLayout from "@/components/UserLayout.vue";
-import WorkingTimeEditor from "@/components/WorkingTimes.vue";
+import WorkingTimes from "@/components/WorkingTimes.vue";
+import PersonalWorkingTimes from "@/components/Profile/PersonalWorkingTimes.vue";
 import NotFound from "@/components/Errors/NotFound.vue";
 import DashboardHome from "@/components/DashboardHome.vue";
 import Login from "@/components/Authentication/Login.vue";
+import PersonalCharts from "@/components/Profile/PersonalCharts.vue";
+import Profile from "@/components/Profile/Profile.vue";
+import TeamDashboard from "@/components/TeamDashboard.vue";
 
 const routes = [
     {
@@ -26,23 +29,28 @@ const routes = [
                 children: [
                     {
                         path: "",
-                        component: DashboardHome
+                        component: TeamDashboard
                     },
                     {
-                        path: 'workingTimes/:userID',
-                        component: WorkingTimeEditor,
-                        name: "WorkingTimes",
+                        path: ":userID",
+                        component: TeamDashboard,
+                        name: "TeamDashboard"
                     },
                     {
-                        path: 'clockManager/:userID',
-                        component: Clocks,
-                        name: "ClockManager",
+                        path: 'profile/workingTimes',
+                        component: PersonalWorkingTimes,
+                        name: "PersonalWorkingTimes",
                     },
                     {
-                        path: 'chartManager/:userID',
-                        component: Chart,
-                        name: "ChartManager",
+                        path: 'profile/chartManager',
+                        component: PersonalCharts,
+                        name: "PersonalChartManager",
                     },
+                    {
+                        path: 'profile',
+                        component: Profile,
+                        name: 'Profile'
+                    }
                 ],
             },
         ]

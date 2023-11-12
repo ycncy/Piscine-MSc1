@@ -7,8 +7,6 @@ defmodule BackendWeb.ClockController do
   alias Backend.Clocks
   alias Backend.Users.User
   alias Backend.Clocks.Clock
-  alias Backend.WorkingTimes
-  alias Backend.WorkingTimes.WorkingTime
   alias Time
 
   action_fallback(BackendWeb.FallbackController)
@@ -27,7 +25,7 @@ defmodule BackendWeb.ClockController do
             |> put_status(404)
             |> json(%{error: "UserNotFound", message: "User not found"})
 
-          user ->
+          _ ->
             query = from(x in Clock, where: x.user_id == ^user_id_int)
             with clocks <- Repo.all(query) do
               conn

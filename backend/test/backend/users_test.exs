@@ -8,7 +8,7 @@ defmodule Backend.UsersTest do
 
     import Backend.UsersFixtures
 
-    @invalid_attrs %{username: nil, email: nil,password: nil}
+    @invalid_attrs %{username: nil, email: nil,password: nil, team_id: nil}
 
     test "list_users/0 returns all users" do
       user = user_fixture()
@@ -21,7 +21,7 @@ defmodule Backend.UsersTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{username: "some username", email: "some@mail.com",password: "somepassword", role: "employee"}
+      valid_attrs = %{username: "some username", email: "some@mail.com",password: "somepassword", role: "employee", team_id: 1}
 
       assert {:ok, %User{} = user} = Users.create_user(valid_attrs)
       assert user.username == "some username"
@@ -36,7 +36,7 @@ defmodule Backend.UsersTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{username: "some updated username", email: "some@updated.mail",password: "someupdatedpassword", role: "manager"}
+      update_attrs = %{username: "some updated username", email: "some@updated.mail",password: "someupdatedpassword", role: "manager", team_id: 1}
 
       assert {:ok, %User{} = user} = Users.update_user(user, update_attrs)
       assert user.username == "some updated username"

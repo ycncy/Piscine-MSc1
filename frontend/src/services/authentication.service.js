@@ -47,8 +47,25 @@ const logout = async () => {
 }
 
 
-const is_logged = () => {
-    return !!sessionStorage.getItem("user");
+const is_logged = async () => {
+    try {
+        const response = await Axios.get(`${auth_url}/check-auth`);
+
+        if (response.status === 200) {
+            set_user({
+                id: response.data.payload.user_id,
+                team_id: response.data.payload.team_id,
+                role: response.data.payload.role,
+            });
+            set_token(response.data.payload.csrf_token);
+
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        return false;
+    }
 }
 const get_user = () => {
     return sessionStorage.getItem("user");
