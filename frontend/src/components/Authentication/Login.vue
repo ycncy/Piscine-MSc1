@@ -1,6 +1,6 @@
 <template>
   <section class="bg-[#161717]">
-    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
       <a href="#" class="flex flex-col items-center mb-6 text-2xl font-semibold text-white">
         <img class="w-16 h-16 mr-2" src="@/assets/logo.png" alt="logo">
         Time Manager
