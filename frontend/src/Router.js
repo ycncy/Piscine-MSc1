@@ -9,6 +9,7 @@ import Login from "@/components/Authentication/Login.vue";
 import PersonalCharts from "@/components/Profile/PersonalCharts.vue";
 import Profile from "@/components/Profile/Profile.vue";
 import TeamDashboard from "@/components/TeamDashboard.vue";
+import Timer from "@/components/Timer.vue";
 
 const routes = [
     {
@@ -50,7 +51,13 @@ const routes = [
                         path: 'profile',
                         component: Profile,
                         name: 'Profile'
-                    }
+                    },
+                    {
+                        path: '/dashboard/timer', 
+                        component: Timer,
+                        name: 'Timer',
+                        
+                      },
                 ],
             },
         ]
