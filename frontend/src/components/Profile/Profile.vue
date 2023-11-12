@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row w-full justify-around py-12">
     <div class="flex flex-col gap-6">
-      <p class="text-white text-3xl">Your information</p>
+      <p class="hidden sm:flex text-white text-3xl">Your information</p>
       <form @submit.prevent="updateCurrentUser" class="space-y-5 bg-white shadow p-4 py-6 sm:p-6 sm:rounded-lg">
         <Loader v-if="(!this.teams && this.authenticated_user.role !== 'employee') || !this.team"
                 class="flex justify-center"/>
@@ -42,7 +42,7 @@
         </div>
       </form>
     </div>
-    <div class="w-1/2 flex flex-col gap-6">
+    <div class="hidden w-1/2 sm:flex flex-col gap-6">
       <p class="text-white text-3xl">Your team</p>
       <div class="shadow-sm border rounded-lg overflow-x-auto">
         <div id="updateUser">
